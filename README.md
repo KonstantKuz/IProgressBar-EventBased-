@@ -13,25 +13,25 @@ public class HealthExampleTreeProgressBar : LineProgressBar<HealthExampleTreePro
 /// далее в нашем случае например в скрипте дерева нам нужно инициализировать его с помощью события следущим образом
 /// InitializeProgressIn<TreeHealthProgressBar>
 /// 
-public class ExampleTree : IEventSubscriber, IEventPublisherWithParams
+public class ExampleTree
 {
     private float maxHealth;
     private float currentHealth;
 
-    InitializeProgressIn<HealthExampleTreeProgressBar> healthInitEvent = new InitializeProgressIn<HealthExampleTreeProgressBar>();
-    UpdateProgressIn<HealthExampleTreeProgressBar> healthUpdateEvent = new UpdateProgressIn<HealthExampleTreeProgressBar>();
+    InitialData<HealthExampleTreeProgressBar> healthInitData;
+    UpdateData<HealthExampleTreeProgressBar> healthUpdateData;
 
     void OnEnable()
     {
         SubscribeToNecessaryEvents();
     }
-    
+
     public void SubscribeToNecessaryEvents()
     {
-        EventAggregator.Subscribe<OnProgressFinishedIn<HealthExampleTreeProgressBar>>(Cut);
+        HealthExampleTreeProgressBar.OnProgressFinished += Cut;
     }
 
-    void Cut()
+    void Cut(OnFinishProgress<HealthExampleTreeProgressBar> stageCompleteData)
     {
         //DEATH
     }
@@ -43,11 +43,12 @@ public class ExampleTree : IEventSubscriber, IEventPublisherWithParams
 
     void InitializeHealthBar()
     {
-        healthInitEvent.MinValue = 0;
-        healthInitEvent.MaxValue = maxHealth;
-        healthInitEvent.CurrentValue = maxHealth; 
+        healthInitData.MinValue = 0;
+        healthInitData.MaxValue = maxHealth;
+        healthInitData.CurrentValue = maxHealth; // пока что currentHealth должен быть равен maxHealth
+                                                  // я поработаю над тем чтоб было без разницы но пока в этом нужды не было
 
-        PublishWithParams(healthInitEvent);
+        HealthExampleTreeProgressBar.InitializeProgress.Invoke(healthInitData);
     }
 
     void ApplyDamage(float amount)
@@ -58,27 +59,22 @@ public class ExampleTree : IEventSubscriber, IEventPublisherWithParams
 
     void UpdateHealthBar()
     {
-        healthUpdateEvent.CurrentValue = currentHealth;
-        PublishWithParams(healthUpdateEvent);
+        healthUpdateData.CurrentValue = currentHealth;
+        HealthExampleTreeProgressBar.UpdateProgress.Invoke(healthUpdateData);
     }
 
-    public void PublishWithParams<T>(T publishedEvent) where T : class
-    {
-        EventAggregator.Publish(publishedEvent);
-    }
 }
-
-/// И похожий пример точечного прогресс бара и контроллера в случае если например нужно срубить несколько деревьев
+/// И похожий пример контроллера в случае если например нужно срубить несколько деревьев
 public class StageExampleTreeProgressBar : LineProgressBar<StageExampleTreeProgressBar>
 {
 }
-public class ExampleTreeController : IEventSubscriber, IEventPublisherWithParams, IEventPublisherWithOutParams
+public class ExampleTreeController
 {
     private int treesCountToWin;
     private int cuttedTreesCount;
 
-    InitializeProgressIn<StageExampleTreeProgressBar> stageInitEvent = new InitializeProgressIn<StageExampleTreeProgressBar>();
-    UpdateProgressIn<StageExampleTreeProgressBar> stageUpdateEvent = new UpdateProgressIn<StageExampleTreeProgressBar>();
+    InitialData<StageExampleTreeProgressBar> stageInitData;
+    UpdateData<StageExampleTreeProgressBar> stageUpdateData;
 
     void OnEnable()
     {
@@ -87,9 +83,7 @@ public class ExampleTreeController : IEventSubscriber, IEventPublisherWithParams
 
     public void SubscribeToNecessaryEvents()
     {
-        EventAggregator.Subscribe<OnProgressFinishedIn<HealthExampleTreeProgressBar>>(InstantiateNewTree); // подписка на событие завершения прогресса в HealthBar
-
-        EventAggregator.Subscribe<OnProgressFinishedIn<StageExampleTreeProgressBar>>(FinishGame);         // подписка на событие завершения прогресса в StageBar
+        StageExampleTreeProgressBar.OnProgressFinished += FinishGame;
     }
 
     void Start()
@@ -99,11 +93,11 @@ public class ExampleTreeController : IEventSubscriber, IEventPublisherWithParams
 
     void InitializeStageBar()
     {
-        stageInitEvent.MinValue = 0;
-        stageInitEvent.MaxValue = treesCountToWin;
-        stageInitEvent.CurrentValue = 0;
+        stageInitData.MinValue = 0;
+        stageInitData.MaxValue = treesCountToWin;
+        stageInitData.CurrentValue = 0;
 
-        PublishWithParams(stageInitEvent);
+        StageExampleTreeProgressBar.InitializeProgress.Invoke(stageInitData);
     }
 
     void InstantiateNewTree()
@@ -115,24 +109,13 @@ public class ExampleTreeController : IEventSubscriber, IEventPublisherWithParams
 
     void UpdateStageProgress()
     {
-        stageUpdateEvent.CurrentValue = cuttedTreesCount;
-        PublishWithParams(stageUpdateEvent);
+        stageUpdateData.CurrentValue = cuttedTreesCount;
+        StageExampleTreeProgressBar.UpdateProgress.Invoke(stageUpdateData);
     }
 
-    void FinishGame()
+    void FinishGame(OnFinishProgress<StageExampleTreeProgressBar> stageCompleteData)
     {
         //Finish
-        Publish<OnFinish>(); // публикуем глобальное событие финиша
-    }
-
-    public void PublishWithParams<T>(T publishedEvent) where T : class
-    {
-        EventAggregator.Publish(publishedEvent);
-    }
-
-    public void Publish<T>() where T : IEventBase
-    {
-        EventAggregator.Publish<T>();
     }
 }
 ```

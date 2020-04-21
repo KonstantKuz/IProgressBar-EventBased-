@@ -38,8 +38,8 @@ public class ExampleTree
     private float maxHealth;
     private float currentHealth;
 
-    InitialData<HealthExampleTreeProgressBar> healthInitData = new InitialData<HealthExampleTreeProgressBar>();
-    UpdateData<HealthExampleTreeProgressBar> healthUpdateData = new UpdateData<HealthExampleTreeProgressBar>();
+    InitialData<HealthExampleTreeProgressBar> healthInitData;
+    UpdateData<HealthExampleTreeProgressBar> healthUpdateData;
 
     void OnEnable()
     {
@@ -93,8 +93,8 @@ public class ExampleTreeController
     private int treesCountToWin;
     private int cuttedTreesCount;
 
-    InitialData<StageExampleTreeProgressBar> stageInitData = new InitialData<StageExampleTreeProgressBar>();
-    UpdateData<StageExampleTreeProgressBar> stageUpdateData = new UpdateData<StageExampleTreeProgressBar>();
+    InitialData<StageExampleTreeProgressBar> stageInitData;
+    UpdateData<StageExampleTreeProgressBar> stageUpdateData;
 
     void OnEnable()
     {
