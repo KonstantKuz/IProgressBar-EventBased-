@@ -45,8 +45,7 @@ public class ExampleTree
     {
         healthInitData.MinValue = 0;
         healthInitData.MaxValue = maxHealth;
-        healthInitData.CurrentValue = maxHealth; // пока что currentHealth должен быть равен maxHealth
-                                                  // я поработаю над тем чтоб было без разницы но пока в этом нужды не было
+        healthInitData.CurrentValue = maxHealth; 
 
         HealthExampleTreeProgressBar.InitializeProgress.Invoke(healthInitData);
     }
