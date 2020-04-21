@@ -117,6 +117,45 @@ public class ExampleTreeController
         //Finish
     }
 }
+
+/// с GameObjectLineProgressBar все проще
+/// создаем прогресс бар и вешаем на него такой же пустой скрипт
+/// цепляем этот прогресс бар на объект и в классе объекта создаем ссылку на этот бар
+public class ExampleGOLineProgressBar : GOLineProgressBar
+{
+}
+public class ExampleGOWithHealth
+{
+    [SerializeField] private ExampleGOLineProgressBar healthBar;
+    private float currentHP;
+    private float maxHP;
+
+    void OnEnable()
+    {
+        healthBar.OnProgressFinished += Death;
+    }
+
+    void Death()
+    {
+
+    }
+
+    void Start()
+    {
+        InitializeHealthBar();
+    }
+
+    void InitializeHealthBar()
+    {
+        healthBar.Initialize(0, maxHP, currentHP);
+    }
+
+    void ApplyDamage(float damage)
+    {
+        currentHP -= damage;
+        healthBar.UpdateCurrentProgress(currentHP);
+    }
+}
 ```
 # Unity Event Aggregator
 

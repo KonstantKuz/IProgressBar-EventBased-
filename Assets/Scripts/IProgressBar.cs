@@ -19,13 +19,13 @@ using System;
 /// по идее все должно быть так))
 /// 
 /// 
-/// КАК ПОЛЬЗОВАТЬСЯ :
+/// КАК ПОЛЬЗОВАТЬСЯ SceneLineProgressBar/ScenePointsProgressBar:
 /// допустим нужен новый прогресс бар в сцене например как прогрессбар здоровья дерева
 /// создаем новый скрипт и просто наследуем его от нужного типа прогресс бара
 /// в нашем случае LineProgressBar
 /// 
 /// в итоге мы должны получить ПУСТОЙ скрипт
-public class HealthExampleTreeProgressBar : LineProgressBar<HealthExampleTreeProgressBar>
+public class HealthExampleTreeProgressBar : SceneLineProgressBar<HealthExampleTreeProgressBar>
 {
 }
 /// этот скрипт вешаем на прогресс бар и вставляем в поле нужную картинку которая исполняет роль прогрессбара (то есть заполняется/убавляется с помощью свойства fillAmount)
@@ -84,7 +84,7 @@ public class ExampleTree
 
 }
 /// И похожий пример контроллера в случае если например нужно срубить несколько деревьев
-public class StageExampleTreeProgressBar : LineProgressBar<StageExampleTreeProgressBar>
+public class StageExampleTreeProgressBar : SceneLineProgressBar<StageExampleTreeProgressBar>
 {
 }
 public class ExampleTreeController
@@ -138,6 +138,44 @@ public class ExampleTreeController
     }
 }
 
+/// с GameObjectLineProgressBar все проще
+/// создаем прогресс бар и вешаем на него такой же пустой скрипт
+/// цепляем этот прогресс бар на объект и в классе объекта создаем ссылку на этот бар
+public class ExampleGOLineProgressBar : GOLineProgressBar
+{
+}
+public class ExampleGOWithHealth
+{
+    [SerializeField] private ExampleGOLineProgressBar healthBar;
+    private float currentHP;
+    private float maxHP;
+
+    void OnEnable()
+    {
+        healthBar.OnProgressFinished += Death;
+    }
+
+    void Death()
+    {
+
+    }
+
+    void Start()
+    {
+        InitializeHealthBar();
+    }
+
+    void InitializeHealthBar()
+    {
+        healthBar.Initialize(0, maxHP, currentHP);
+    }
+
+    void ApplyDamage(float damage)
+    {
+        currentHP -= damage;
+        healthBar.UpdateCurrentProgress(currentHP);
+    }
+}
 public interface IProgressBar
 {
     bool Finished { get; }         // необходимо для одноразового вызова события OnProgressFinished<КонкретныйПрогрессБар>
@@ -191,10 +229,11 @@ public interface IProgressBar
 
 public interface SceneProgressBar<T> : IProgressBar where T : class
 {
-    void Initialize(InitialData<T> initData);                 // в качестве параметров initData и progressData 
-    void UpdateCurrentProgress(UpdateData<T> progressData);  // выступают контейнеры InitializationData<КонкретныйПрогрессБар> и UpdateProgressData<КонкретныйПрогрессБар>
-                                                                     // в которых содержатся необходимые параметры
     OnFinishProgress<T> FinishProgress { get; }
+
+    void Initialize(InitialData<T> initData);                // в качестве параметров initData и progressData 
+    void UpdateCurrentProgress(UpdateData<T> progressData);  // выступают контейнеры InitializationData<КонкретныйПрогрессБар> и UpdateProgressData<КонкретныйПрогрессБар>
+                                                             // в которых содержатся необходимые параметры
 }
 public struct InitialData<SceneProgressBar>
 {
@@ -213,7 +252,7 @@ public struct OnFinishProgress<SceneProgressBar>
 {
 }
 
-public class LineProgressBar<T> : MonoBehaviour, SceneProgressBar<T> where T : class
+public class SceneLineProgressBar<T> : MonoBehaviour, SceneProgressBar<T> where T : class
 {
     [SerializeField] private Image progressBarImage;
 
@@ -230,7 +269,8 @@ public class LineProgressBar<T> : MonoBehaviour, SceneProgressBar<T> where T : c
     
     public static Action<InitialData<T>> InitializeProgress;
     public static Action<UpdateData<T>> UpdateProgress;
-    public static Action<OnFinishProgress<T>> OnProgressFinished;
+    public static Action<OnFinishProgress<T>> OnProgressFinished;         // подписка осуществляется только с помощью delegate
+                                                                          // пр-р : КонкретныйПрогрессБар.OnProgressFinished += delegate { метод/функция };
 
     private void OnEnable()
     {
@@ -332,7 +372,7 @@ public class LineProgressBar<T> : MonoBehaviour, SceneProgressBar<T> where T : c
     }
 }
 
-public class PointsProgressBar<T> : MonoBehaviour, SceneProgressBar<T> where T : class
+public class ScenePointsProgressBar<T> : MonoBehaviour, SceneProgressBar<T> where T : class
 {
     [SerializeField] private Sprite stageCurrent;
     [SerializeField] private Sprite stageComplete;
@@ -362,7 +402,8 @@ public class PointsProgressBar<T> : MonoBehaviour, SceneProgressBar<T> where T :
 
     public void SubscribeToNecessaryEvents()
     {
-
+        InitializeProgress += Initialize;
+        UpdateProgress += UpdateCurrentProgress;
     }
 
     public void Initialize(InitialData<T> initializationData)
@@ -472,6 +513,109 @@ public class PointsProgressBar<T> : MonoBehaviour, SceneProgressBar<T> where T :
 
 public interface GameObjectProgressBar : IProgressBar
 {
-    void Initialize(float maxValue, float currentValue);
+    Action OnProgressFinished { get; set; }
+
+    void Initialize(float minValue, float maxValue, float currentValue);
     void UpdateCurrentProgress(float currentValue);
+}
+
+public class GOLineProgressBar : MonoBehaviour, GameObjectProgressBar
+{
+    [SerializeField] private Image progressBarImage;
+
+    [SerializeField] private bool revert;
+    public float MinValue { get; private set; }
+    public float MaxValue { get; private set; }
+    public float CurrentValue { get; private set; }
+    public bool RevertVisual { get { return revert; } }
+    public bool Finished { get; private set; }
+    public bool Decrease { get; private set; }
+    
+    public Action OnProgressFinished { get; set; }
+
+    public void Initialize(float minValue, float maxValue, float currentValue)
+    {
+        Finished = false;
+        MinValue = minValue;
+        MaxValue = maxValue;
+        CurrentValue = currentValue;
+        if (CurrentProgress() >= 1)
+            Decrease = true;
+
+        Debug.Log($"Initialized {gameObject.name} with Values (click for full details)" +
+            $"\n MinValue = {MinValue}, MaxValue = {MaxValue}, CurrentValue = {CurrentValue}." +
+            $"\n Is this progress decreasing?={Decrease}." +
+            $"\n Is this progress visual reverted?= {RevertVisual}");
+        //логика инициализации и обновления визуала в идеале должны быть единственным изменением в коде шаблона но ничто не идеально))
+
+        UpdateUI();
+    }
+
+    public void UpdateUI()                               // логика обновления визуала и инициализации должны быть единственным изменением в коде шаблона
+    {
+        progressBarImage.fillAmount = CurrentVisualProgress();
+    }
+
+    public float CurrentVisualProgress()                 // например тут понадобилось вывести отдельное значение визуального прогресса в зависимости от RevertVisual
+    {
+        float CurrentVisualProgress;
+
+        if (RevertVisual)
+        {
+            float CurrentRevertedValue = MaxValue - CurrentValue;
+            CurrentVisualProgress = (CurrentRevertedValue - MinValue) / (MaxValue - MinValue);
+
+        }
+        else
+        {
+            CurrentVisualProgress = (CurrentValue - MinValue) / (MaxValue - MinValue);
+        }
+
+        return CurrentVisualProgress;
+    }
+
+    public void UpdateCurrentProgress(float currentValue)
+    {
+        CurrentValue = currentValue;
+
+        CheckProgress();
+
+        UpdateUI();
+    }
+
+    public float CurrentProgress()
+    {
+        float CurrentProgress = (CurrentValue - MinValue) / (MaxValue - MinValue);
+        //Debug.Log($"Current progress in {this} == {CurrentProgress}");
+        return CurrentProgress;
+    }
+
+    public void CheckProgress()
+    {
+        if (!Finished)
+        {
+            if (MinValue > MaxValue)
+            {
+                Debug.LogError("MinValue needs to be greater than MaxValue");
+            }
+            if (Decrease)
+            {
+                if (CurrentProgress() <= 0)
+                {
+                    Debug.Log($"Finish was triggered in {gameObject.name} with CurrentProgress() == 0");
+                    OnProgressFinished?.Invoke();
+                    Finished = true;
+                }
+            }
+            else
+            {
+                if (CurrentProgress() >= 1)
+                {
+                    Debug.Log($"Finish was triggered in {gameObject.name} with CurrentProgress() == 1");
+                    OnProgressFinished?.Invoke();
+                    Finished = true;
+                }
+            }
+        }
+    }
 }

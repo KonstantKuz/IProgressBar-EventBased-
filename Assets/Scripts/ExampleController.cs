@@ -15,8 +15,8 @@ public class ExampleController : MonoBehaviour
 
     private void OnEnable()
     {
-        FirstExampleProgressBar.OnProgressFinished += delegate { Finish("Finish on first progressBar! "); };
-        SecondExampleProgressBar.OnProgressFinished += delegate { Finish("Finish on second progressBar! "); };
+        FirstExampleProgressBar.OnProgressFinished += delegate { Finish("Finish on green progressBar! "); };
+        SecondExampleProgressBar.OnProgressFinished += delegate { Finish("Finish on red progressBar! "); };
     }
 
     // Start is called before the first frame update
@@ -49,24 +49,24 @@ public class ExampleController : MonoBehaviour
     {
         if(Input.GetKey(KeyCode.D))
         {
-            progress1 += Time.deltaTime * 15f;
+            progress1 += Time.deltaTime * 50f;
 
             firstUpdateData.CurrentValue = progress1;
             FirstExampleProgressBar.UpdateProgress.Invoke(firstUpdateData);
 
-            progress2 += Time.deltaTime * 15f;
+            progress2 += Time.deltaTime * 50f;
 
             secondUpdateData.CurrentValue = progress2;
             SecondExampleProgressBar.UpdateProgress.Invoke(secondUpdateData);
         }
         if(Input.GetKey(KeyCode.A))
         {
-            progress1 -= Time.deltaTime * 15f;
+            progress1 -= Time.deltaTime * 50f;
 
             firstUpdateData.CurrentValue = progress1;
             FirstExampleProgressBar.UpdateProgress.Invoke(firstUpdateData);
 
-            progress2 -= Time.deltaTime * 15f;
+            progress2 -= Time.deltaTime * 50f;
 
             secondUpdateData.CurrentValue = progress2;
             SecondExampleProgressBar.UpdateProgress.Invoke(secondUpdateData);

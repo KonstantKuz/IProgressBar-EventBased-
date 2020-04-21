@@ -2,6 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FirstExampleProgressBar : LineProgressBar<FirstExampleProgressBar>
+public class FirstExampleProgressBar : SceneLineProgressBar<FirstExampleProgressBar>
 {
 }
