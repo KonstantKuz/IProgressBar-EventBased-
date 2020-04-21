@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using EventAggregation;
+using System;
 
 /// все это должно помочь легко управлять любыми видами прогресса на сцене и разными видами прогресс баров
 /// то есть поможет изи следить и за прогрессом фактическим (триггеря/вызывая необходимые события/методы при достижении прогресса)
@@ -33,25 +33,25 @@ public class HealthExampleTreeProgressBar : LineProgressBar<HealthExampleTreePro
 /// далее в нашем случае например в скрипте дерева нам нужно инициализировать его с помощью события следущим образом
 /// InitializeProgressIn<TreeHealthProgressBar>
 /// 
-public class ExampleTree : IEventSubscriber, IEventPublisherWithParams
+public class ExampleTree
 {
     private float maxHealth;
     private float currentHealth;
 
-    InitializeProgressIn<HealthExampleTreeProgressBar> healthInitEvent = new InitializeProgressIn<HealthExampleTreeProgressBar>();
-    UpdateProgressIn<HealthExampleTreeProgressBar> healthUpdateEvent = new UpdateProgressIn<HealthExampleTreeProgressBar>();
+    InitialData<HealthExampleTreeProgressBar> healthInitData = new InitialData<HealthExampleTreeProgressBar>();
+    UpdateData<HealthExampleTreeProgressBar> healthUpdateData = new UpdateData<HealthExampleTreeProgressBar>();
 
     void OnEnable()
     {
         SubscribeToNecessaryEvents();
     }
-    
+
     public void SubscribeToNecessaryEvents()
     {
-        EventAggregator.Subscribe<OnProgressFinishedIn<HealthExampleTreeProgressBar>>(Cut);
+        HealthExampleTreeProgressBar.OnProgressFinished += Cut;
     }
 
-    void Cut()
+    void Cut(OnFinishProgress<HealthExampleTreeProgressBar> stageCompleteData)
     {
         //DEATH
     }
@@ -63,12 +63,12 @@ public class ExampleTree : IEventSubscriber, IEventPublisherWithParams
 
     void InitializeHealthBar()
     {
-        healthInitEvent.MinValue = 0;
-        healthInitEvent.MaxValue = maxHealth;
-        healthInitEvent.CurrentValue = maxHealth; // пока что currentHealth должен быть равен maxHealth
+        healthInitData.MinValue = 0;
+        healthInitData.MaxValue = maxHealth;
+        healthInitData.CurrentValue = maxHealth; // пока что currentHealth должен быть равен maxHealth
                                                   // я поработаю над тем чтоб было без разницы но пока в этом нужды не было
 
-        PublishWithParams(healthInitEvent);
+        HealthExampleTreeProgressBar.InitializeProgress.Invoke(healthInitData);
     }
 
     void ApplyDamage(float amount)
@@ -79,27 +79,22 @@ public class ExampleTree : IEventSubscriber, IEventPublisherWithParams
 
     void UpdateHealthBar()
     {
-        healthUpdateEvent.CurrentValue = currentHealth;
-        PublishWithParams(healthUpdateEvent);
+        healthUpdateData.CurrentValue = currentHealth;
+        HealthExampleTreeProgressBar.UpdateProgress.Invoke(healthUpdateData);
     }
 
-    public void PublishWithParams<T>(T publishedEvent) where T : class
-    {
-        EventAggregator.Publish(publishedEvent);
-    }
 }
-
 /// И похожий пример контроллера в случае если например нужно срубить несколько деревьев
 public class StageExampleTreeProgressBar : LineProgressBar<StageExampleTreeProgressBar>
 {
 }
-public class ExampleTreeController : IEventSubscriber, IEventPublisherWithParams, IEventPublisherWithOutParams
+public class ExampleTreeController
 {
     private int treesCountToWin;
     private int cuttedTreesCount;
 
-    InitializeProgressIn<StageExampleTreeProgressBar> stageInitEvent = new InitializeProgressIn<StageExampleTreeProgressBar>();
-    UpdateProgressIn<StageExampleTreeProgressBar> stageUpdateEvent = new UpdateProgressIn<StageExampleTreeProgressBar>();
+    InitialData<StageExampleTreeProgressBar> stageInitData = new InitialData<StageExampleTreeProgressBar>();
+    UpdateData<StageExampleTreeProgressBar> stageUpdateData = new UpdateData<StageExampleTreeProgressBar>();
 
     void OnEnable()
     {
@@ -108,9 +103,7 @@ public class ExampleTreeController : IEventSubscriber, IEventPublisherWithParams
 
     public void SubscribeToNecessaryEvents()
     {
-        EventAggregator.Subscribe<OnProgressFinishedIn<HealthExampleTreeProgressBar>>(InstantiateNewTree); // подписка на событие завершения прогресса в HealthBar
-
-        EventAggregator.Subscribe<OnProgressFinishedIn<StageExampleTreeProgressBar>>(FinishGame);         // подписка на событие завершения прогресса в StageBar
+        StageExampleTreeProgressBar.OnProgressFinished += FinishGame;
     }
 
     void Start()
@@ -120,11 +113,11 @@ public class ExampleTreeController : IEventSubscriber, IEventPublisherWithParams
 
     void InitializeStageBar()
     {
-        stageInitEvent.MinValue = 0;
-        stageInitEvent.MaxValue = treesCountToWin;
-        stageInitEvent.CurrentValue = 0;
+        stageInitData.MinValue = 0;
+        stageInitData.MaxValue = treesCountToWin;
+        stageInitData.CurrentValue = 0;
 
-        PublishWithParams(stageInitEvent);
+        StageExampleTreeProgressBar.InitializeProgress.Invoke(stageInitData);
     }
 
     void InstantiateNewTree()
@@ -136,24 +129,13 @@ public class ExampleTreeController : IEventSubscriber, IEventPublisherWithParams
 
     void UpdateStageProgress()
     {
-        stageUpdateEvent.CurrentValue = cuttedTreesCount;
-        PublishWithParams(stageUpdateEvent);
+        stageUpdateData.CurrentValue = cuttedTreesCount;
+        StageExampleTreeProgressBar.UpdateProgress.Invoke(stageUpdateData);
     }
 
-    void FinishGame()
+    void FinishGame(OnFinishProgress<StageExampleTreeProgressBar> stageCompleteData)
     {
         //Finish
-        Publish<OnFinish>(); // публикуем глобальное событие финиша
-    }
-
-    public void PublishWithParams<T>(T publishedEvent) where T : class
-    {
-        EventAggregator.Publish(publishedEvent);
-    }
-
-    public void Publish<T>() where T : IEventBase
-    {
-        EventAggregator.Publish<T>();
     }
 }
 
@@ -208,31 +190,28 @@ public interface IProgressBar
 /// такие прогресс бары должны управляться ИСКЛЮЧИТЕЛЬНО посредством событий таких как
 /// InitializeProgressIn<КонкретныйПрогрессБар> UpdateProgressIn<КонкретныйПрогрессБар> OnProgressFinishedIn<КонкретныйПрогрессБар>
 
-public interface SceneProgressBar<T> : IEventSubscriber, IProgressBar where T : class
+public interface SceneProgressBar<T> : IProgressBar where T : class
 {
-    void Initialize(IEventBase initEvent);                 // в качестве параметров initEvent и progressEvent 
-    void UpdateCurrentProgress(IEventBase progressEvent);  // выступают события OnInitializeProgressBar<КонкретныйПрогрессБар> и OnChangeProgressIn<КонкретныйПрогрессБар>
-                                                           // в которых содержатся необходимые параметры
-
-    InitializeProgressIn<T> InitializeEvent { get; }
-    UpdateProgressIn<T> ChangeProgressEvent { get; }
+    void Initialize(InitialData<T> initData);                 // в качестве параметров initData и progressData 
+    void UpdateCurrentProgress(UpdateData<T> progressData);  // выступают контейнеры InitializationData<КонкретныйПрогрессБар> и UpdateProgressData<КонкретныйПрогрессБар>
+                                                                     // в которых содержатся необходимые параметры
+    OnFinishProgress<T> FinishProgress { get; }
 }
-public class InitializeProgressIn<SceneProgressBar> : IEventBase
+public struct InitialData<SceneProgressBar>
 {
     public float MinValue;
     public float MaxValue;
     public float CurrentValue;
 }
-public class UpdateProgressIn<SceneProgressBar> : IEventBase
+public struct UpdateData<SceneProgressBar>
 {
     public float CurrentValue;     // при любом изменении прогресса и соответственно при вызове этого события
                                    // необходимо передавать текущее значение конкретной величины
                                    // например в случае прогресс баром здоровья дерева в параметр должно записываться текущее здоровье дерева
 
 }
-public class OnProgressFinishedIn<SceneProgressBar> : IEventBase
+public struct OnFinishProgress<SceneProgressBar>
 {
-                                   // событие которое вызывается один раз автоматически при достижении необходимого прогресса
 }
 
 public class LineProgressBar<T> : MonoBehaviour, SceneProgressBar<T> where T : class
@@ -247,10 +226,12 @@ public class LineProgressBar<T> : MonoBehaviour, SceneProgressBar<T> where T : c
     public bool RevertVisual { get { return revert; } }
     public bool Finished { get; private set; }
     public bool Decrease { get; private set; }
-
-    public virtual InitializeProgressIn<T> InitializeEvent { get; private set; }
-    public virtual UpdateProgressIn<T> ChangeProgressEvent { get; private set; }
-
+    
+    public OnFinishProgress<T> FinishProgress { get; private set; }
+    
+    public static Action<InitialData<T>> InitializeProgress;
+    public static Action<UpdateData<T>> UpdateProgress;
+    public static Action<OnFinishProgress<T>> OnProgressFinished;
 
     private void OnEnable()
     {
@@ -259,29 +240,26 @@ public class LineProgressBar<T> : MonoBehaviour, SceneProgressBar<T> where T : c
 
     public void SubscribeToNecessaryEvents()
     {
-        EventAggregator.Subscribe<InitializeProgressIn<T>>(Initialize);
-        EventAggregator.Subscribe<UpdateProgressIn<T>>(UpdateCurrentProgress);
+        InitializeProgress += Initialize;
+        UpdateProgress += UpdateCurrentProgress;
     }
 
-    public void Initialize(IEventBase initEvent)
+    public void Initialize(InitialData<T> initializationData)
     {
-        InitializeEvent = new InitializeProgressIn<T>();
-        ChangeProgressEvent = new UpdateProgressIn<T>();
-
-        InitializeEvent = initEvent as InitializeProgressIn<T>;
+        FinishProgress = new OnFinishProgress<T>();
 
         Finished = false;
-        MinValue = InitializeEvent.MinValue;
-        MaxValue = InitializeEvent.MaxValue;
-        CurrentValue = InitializeEvent.CurrentValue;
-        if (CurrentProgress() == 1)
+        MinValue = initializationData.MinValue;
+        MaxValue = initializationData.MaxValue;
+        CurrentValue = initializationData.CurrentValue;
+        if (CurrentProgress() >= 1)
             Decrease = true;
 
         Debug.Log($"Initialized {typeof(T)} with Values (click for full details)" +
             $"\n MinValue = {MinValue}, MaxValue = {MaxValue}, CurrentValue = {CurrentValue}." +
             $"\n Is this progress decreasing?={Decrease}." +
             $"\n Is this progress visual reverted?= {RevertVisual}");
-        // логика инициализации и обновления визуала в идеале должны быть единственным изменением в коде шаблона но ничто не идеально))
+        //логика инициализации и обновления визуала в идеале должны быть единственным изменением в коде шаблона но ничто не идеально))
 
         UpdateUI();
     }
@@ -309,11 +287,9 @@ public class LineProgressBar<T> : MonoBehaviour, SceneProgressBar<T> where T : c
         return CurrentVisualProgress;
     }
 
-    public void UpdateCurrentProgress(IEventBase progressEvent)
+    public void UpdateCurrentProgress(UpdateData<T> progressData)
     {
-        ChangeProgressEvent = progressEvent as UpdateProgressIn<T>;
-        
-        CurrentValue = ChangeProgressEvent.CurrentValue;
+        CurrentValue = progressData.CurrentValue;
 
         CheckProgress();
 
@@ -326,7 +302,7 @@ public class LineProgressBar<T> : MonoBehaviour, SceneProgressBar<T> where T : c
         //Debug.Log($"Current progress in {this} == {CurrentProgress}");
         return CurrentProgress;
     }
-    
+
     public void CheckProgress()
     {
         if (!Finished)
@@ -337,19 +313,19 @@ public class LineProgressBar<T> : MonoBehaviour, SceneProgressBar<T> where T : c
             }
             if (Decrease)
             {
-                if (CurrentProgress() == 0)
+                if (CurrentProgress() <= 0)
                 {
                     Debug.Log($"Finish was triggered in {typeof(T)} with CurrentProgress() == 0");
-                    EventAggregator.Publish<OnProgressFinishedIn<T>>();
+                    OnProgressFinished?.Invoke(FinishProgress);
                     Finished = true;
                 }
             }
             else
             {
-                if (CurrentProgress() == 1)
+                if (CurrentProgress() >= 1)
                 {
                     Debug.Log($"Finish was triggered in {typeof(T)} with CurrentProgress() == 1");
-                    EventAggregator.Publish<OnProgressFinishedIn<T>>();
+                    OnProgressFinished?.Invoke(FinishProgress);
                     Finished = true;
                 }
             }
@@ -365,7 +341,7 @@ public class PointsProgressBar<T> : MonoBehaviour, SceneProgressBar<T> where T :
     [SerializeField] private GameObject pointsParent;
     private Image[] stagePoints;
     private int AnimationHash = Animator.StringToHash("StageComplete");
-    
+
     [SerializeField] private bool revert;
     public float MinValue { get; private set; }
     public float MaxValue { get; private set; }
@@ -373,9 +349,12 @@ public class PointsProgressBar<T> : MonoBehaviour, SceneProgressBar<T> where T :
     public bool RevertVisual { get { return revert; } }
     public bool Finished { get; private set; }
     public bool Decrease { get; private set; }
+    
+    public OnFinishProgress<T> FinishProgress { get; private set; }
 
-    public InitializeProgressIn<T> InitializeEvent { get; private set; }
-    public UpdateProgressIn<T> ChangeProgressEvent { get; private set; }
+    public static Action<InitialData<T>> InitializeProgress;
+    public static Action<UpdateData<T>> UpdateProgress;
+    public static Action<OnFinishProgress<T>> OnProgressFinished;
 
     private void OnEnable()
     {
@@ -384,29 +363,25 @@ public class PointsProgressBar<T> : MonoBehaviour, SceneProgressBar<T> where T :
 
     public void SubscribeToNecessaryEvents()
     {
-        EventAggregator.Subscribe<InitializeProgressIn<T>>(Initialize);
-        EventAggregator.Subscribe<UpdateProgressIn<T>>(UpdateCurrentProgress);
+
     }
 
-    public void Initialize(IEventBase initEvent)
+    public void Initialize(InitialData<T> initializationData)
     {
-        InitializeEvent = new InitializeProgressIn<T>();
-        ChangeProgressEvent = new UpdateProgressIn<T>();
-
-        InitializeEvent = initEvent as InitializeProgressIn<T>;
+        FinishProgress = new OnFinishProgress<T>();
 
         Finished = false;
-        MinValue = InitializeEvent.MinValue;
-        MaxValue = InitializeEvent.MaxValue;
-        CurrentValue = InitializeEvent.CurrentValue;
-        if (CurrentProgress() == 1)
+        MinValue = initializationData.MinValue;
+        MaxValue = initializationData.MaxValue;
+        CurrentValue = initializationData.CurrentValue;
+        if (CurrentProgress() >= 1)
             Decrease = true;
 
         Debug.Log($"Initialized {typeof(T)} with Values (click for full details)" +
             $"\n MinValue = {MinValue}, MaxValue = {MaxValue}, CurrentValue = {CurrentValue}." +
             $"\n Is this progress decreasing?={Decrease}." +
             $"\n Is this progress visual reverted?= {RevertVisual}");
-        // логика инициализации и обновления визуала должны быть единственным изменением в коде шаблона ПОМИМО замены имени класса 
+        //логика инициализации и обновления визуала должны быть единственным изменением в коде шаблона ПОМИМО замены имени класса
 
         InitializeUI();  // в этом прогресс баре как и возможно в других требуется дополнительно логика инициализации визуала
 
@@ -422,9 +397,9 @@ public class PointsProgressBar<T> : MonoBehaviour, SceneProgressBar<T> where T :
             stagePoints[i] = Instantiate(stagePointPrefab, pointsParent.transform).GetComponent<Image>();
         }
 
-        if (RevertVisual)                           
+        if (RevertVisual)
         {
-            System.Array.Reverse(stagePoints);            // как видишь вся магия реверса визула тут происходит совсем по другому
+            System.Array.Reverse(stagePoints);            // магия реверса визула тут происходит совсем по другому
                                                           // однако код реализации интерфейсов по большей части не изменен в обоих шаблонах
                                                           // если вдруг понадобится еще один нетипичный вид прогресс бара
                                                           // и если я окажусь прав, то написать его по шаблону не составит большого труда
@@ -450,11 +425,9 @@ public class PointsProgressBar<T> : MonoBehaviour, SceneProgressBar<T> where T :
         }
     }
 
-    public void UpdateCurrentProgress(IEventBase progressEvent)
+    public void UpdateCurrentProgress(UpdateData<T> progressData)
     {
-        ChangeProgressEvent = progressEvent as UpdateProgressIn<T>;
-
-        CurrentValue = ChangeProgressEvent.CurrentValue;
+        CurrentValue = progressData.CurrentValue;
 
         CheckProgress();
 
@@ -478,19 +451,19 @@ public class PointsProgressBar<T> : MonoBehaviour, SceneProgressBar<T> where T :
             }
             if (Decrease)
             {
-                if (CurrentProgress() == 0)
+                if (CurrentProgress() <= 0)
                 {
-                    Debug.Log($"Finish was triggered in {typeof(T)} with CurrentProgress() == 0");
-                    EventAggregator.Publish<OnProgressFinishedIn<T>>();
+                    Debug.Log($"Finish was triggered in {typeof(T)} with CurrentProgress() <= 0");
+                    OnProgressFinished?.Invoke(FinishProgress);
                     Finished = true;
                 }
             }
             else
             {
-                if (CurrentProgress() == 1)
+                if (CurrentProgress() >= 1)
                 {
-                    Debug.Log($"Finish was triggered in {typeof(T)} with CurrentProgress() == 1");
-                    EventAggregator.Publish<OnProgressFinishedIn<T>>();
+                    Debug.Log($"Finish was triggered in {typeof(T)} with CurrentProgress() >= 1");
+                    OnProgressFinished?.Invoke(FinishProgress);
                     Finished = true;
                 }
             }
@@ -498,9 +471,6 @@ public class PointsProgressBar<T> : MonoBehaviour, SceneProgressBar<T> where T :
     }
 }
 
-/// <summary>
-/// 
-/// </summary>
 public interface GameObjectProgressBar : IProgressBar
 {
     void Initialize(float maxValue, float currentValue);
