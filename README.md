@@ -45,8 +45,7 @@ public class ExampleTree : IEventSubscriber, IEventPublisherWithParams
     {
         healthInitEvent.MinValue = 0;
         healthInitEvent.MaxValue = maxHealth;
-        healthInitEvent.CurrentValue = maxHealth; // пока что currentHealth должен быть равен maxHealth
-                                                  // я поработаю над тем чтоб было без разницы но пока в этом нужды не было
+        healthInitEvent.CurrentValue = maxHealth; 
 
         PublishWithParams(healthInitEvent);
     }
