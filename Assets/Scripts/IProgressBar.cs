@@ -110,7 +110,7 @@ public class ExampleTreeController : IEventSubscriber, IEventPublisherWithParams
     {
         EventAggregator.Subscribe<OnProgressFinishedIn<HealthExampleTreeProgressBar>>(InstantiateNewTree); // подписка на событие завершения прогресса в HealthBar
 
-        EventAggregator.Subscribe<OnProgressFinishedIn<HealthExampleTreeProgressBar>>(FinishGame);         // подписка на событие завершения прогресса в StageBar
+        EventAggregator.Subscribe<OnProgressFinishedIn<StageExampleTreeProgressBar>>(FinishGame);         // подписка на событие завершения прогресса в StageBar
     }
 
     void Start()
