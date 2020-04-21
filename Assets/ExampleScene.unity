@@ -816,7 +816,7 @@ MonoBehaviour:
 
     This
     means that progress would be decreasing and OnFinish would be triggered only
-    when Progress=(CurrentValue-MinValue)/(MaxValue-MinValue)==0'
+    when CurrentValue=<MinValue (Progress=(CurrentValue-MinValue)/(MaxValue-MinValue)==0)'
 --- !u!222 &1497587169
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -972,7 +972,7 @@ MonoBehaviour:
 
     This
     means that progress would be increasing and OnFinish would be triggered only
-    when Progress=(CurrentValue-MinValue)/(MaxValue-MinValue)==1'
+    when CurrentValue=>MaxValue (Progress=(CurrentValue-MinValue)/(MaxValue-MinValue)==1)'
 --- !u!222 &1852626042
 CanvasRenderer:
   m_ObjectHideFlags: 0
