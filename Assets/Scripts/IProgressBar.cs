@@ -4,7 +4,7 @@ using System;
 
 public interface IProgressBar
 {
-    bool Finished { get; }         // необходимо для одноразового вызова события OnProgressFinished<КонкретныйПрогрессБар>
+    bool Finished { get; }         // необходимо для одноразового вызова события OnProgressFinished
     
     
     float MinValue { get; }        // MinValue олицетворяет нижнюю границу прогресса
@@ -25,11 +25,11 @@ public interface IProgressBar
     bool RevertVisual { get; }     // инвертирует поведение прогресс бара визуально
 
     bool Decrease { get; }         // необходимо для проверки поведения фактического прогресса
-                                     // устанавливается автоматически при инициализации
-                                     // и означает что если CurrentValue == MaxValue значит от прогресса ожидается уменьшение 
-                                     // и вызов события OnProgressFinishedIn<КонкретныйПрогрессБар> будет осуществлен только в случае CurrentProgress == 0
-                                     // в случае CurrentValue == MinValue ожидается увеличение
-                                     // и вызов события OnProgressFinishedIn<КонкретныйПрогрессБар> будет осуществлен только в случае CurrentProgress == 1
+                                   // устанавливается автоматически при инициализации
+                                   // и означает что если CurrentValue == MaxValue значит от прогресса ожидается уменьшение 
+                                   // и вызов события OnProgressFinished будет осуществлен только в случае CurrentProgress == 0
+                                   // в случае CurrentValue == MinValue ожидается увеличение
+                                   // и вызов события OnProgressFinished будет осуществлен только в случае CurrentProgress == 1
 
 
     float CurrentProgress();       // значение прогресса считается по формуле
@@ -39,8 +39,7 @@ public interface IProgressBar
     void UpdateUI();               // метод в котором обновляется визуал прогресса который в идеале может быть каким угодно)
 
     void CheckProgress();          // метод в котором производится проверка текущего значения прогресса
-                                   // и вызываются необходимые методы владельца(например если прогресс бар висит на машинке как в шутем)
-                                   // или триггерится событие OnProgressFinished<КонкретныйПрогрессБар>(если тип прогрессбара в сцене всего один)
+                                   // и триггерится событие OnProgressFinished
 
                                    // примечание : например тип TreeHealthIndicator и тип SheepShaveProgressBar могут легко находиться на одной сцене
                                    // и легко управляться разными сущностями с помощью событий
@@ -48,8 +47,6 @@ public interface IProgressBar
 }
 
 /// SceneProgressBar - интерфейс необходимый для реализации уникальных для конкретной сцены прогресс баров и работы с ним посредством событий
-/// например прогресс бар дерева из WoodCut - в сцене он уникален и находится в единственном экземпляре
-/// или прогресс бар закинутых в ведра фруктов из Funny-Farm/DropIt
 /// такие прогресс бары должны управляться ИСКЛЮЧИТЕЛЬНО посредством событий таких как
 /// InitializeProgress UpdateProgress 
 /// OnProgressFinished 
@@ -70,9 +67,9 @@ public struct InitialData<SceneProgressBar>
 }
 public struct UpdateData<SceneProgressBar>
 {
-    public float CurrentValue;     // при любом изменении прогресса и соответственно при вызове этого события
+    public float CurrentValue;     // при любом изменении прогресса и соответственно при вызове события обновления
                                    // необходимо передавать текущее значение конкретной величины
-                                   // например в случае прогресс баром здоровья дерева в параметр должно записываться текущее здоровье дерева
+                                   // например в случае прогресс баром здоровья в параметр должно записываться текущее здоровье
 
 }
 public struct OnFinishProgress<SceneProgressBar>
@@ -201,10 +198,12 @@ public class SceneLineProgressBar<T> : MonoBehaviour, SceneProgressBar<T> where 
 
 public class ScenePointsProgressBar<T> : MonoBehaviour, SceneProgressBar<T> where T : class
 {
-    [SerializeField] private Sprite stageCurrent;
-    [SerializeField] private Sprite stageComplete;
-    [SerializeField] private GameObject stagePointPrefab;
-    [SerializeField] private GameObject pointsParent;
+    [SerializeField] private Sprite currentStageSprite;
+    [SerializeField] private Sprite completeStageSprite;
+    [SerializeField] private GameObject stagePointImagePrefab;
+    [SerializeField] private GameObject stagePointsParentPanel;
+    [SerializeField] private bool Animate;
+
     private Image[] stagePoints;
     private int AnimationHash = Animator.StringToHash("StageComplete");    // пока что анимация воспроизводится через аниматор
 
@@ -261,7 +260,7 @@ public class ScenePointsProgressBar<T> : MonoBehaviour, SceneProgressBar<T> wher
 
         for (int i = 0; i < MaxValue; i++)
         {
-            stagePoints[i] = Instantiate(stagePointPrefab, pointsParent.transform).GetComponent<Image>();
+            stagePoints[i] = Instantiate(stagePointImagePrefab, stagePointsParentPanel.transform).GetComponent<Image>();
         }
 
         if (RevertVisual)
@@ -274,7 +273,7 @@ public class ScenePointsProgressBar<T> : MonoBehaviour, SceneProgressBar<T> wher
                                                           // что работать с ним в итоге все равно можно будет так же как и с этими двумя
         }
 
-        stagePoints[0].sprite = stageCurrent;
+        stagePoints[0].sprite = currentStageSprite;
     }
 
     public void UpdateUI()
@@ -284,10 +283,12 @@ public class ScenePointsProgressBar<T> : MonoBehaviour, SceneProgressBar<T> wher
             int completeStageIndex = (int)CurrentValue - 1;
             int currentStageIndex = (int)CurrentValue;
 
-            stagePoints[completeStageIndex].sprite = stageComplete;
-            stagePoints[completeStageIndex].GetComponent<Animator>().Play(AnimationHash);
+            stagePoints[completeStageIndex].sprite = completeStageSprite;
+            if(Animate)
+                stagePoints[completeStageIndex].GetComponent<Animator>().Play(AnimationHash);
+
             if (CurrentValue != MaxValue)
-                stagePoints[currentStageIndex].sprite = stageCurrent;
+                stagePoints[currentStageIndex].sprite = currentStageSprite;
 
         }
     }
@@ -450,7 +451,7 @@ public class GOLineProgressBar : MonoBehaviour, GameObjectProgressBar
 
 
 /// КАК ПОЛЬЗОВАТЬСЯ SceneLineProgressBar/ScenePointsProgressBar:
-/// допустим нужен новый прогресс бар в сцене например как прогрессбар здоровья дерева
+/// допустим нужен новый прогресс бар в сцене например как прогрессбар здоровья дерева которое нужно срубить
 /// создаем новый скрипт и просто наследуем его от нужного типа прогресс бара
 /// в нашем случае LineProgressBar
 /// 
@@ -498,6 +499,8 @@ public class ExampleTree
 
         HealthExampleTreeProgressBar.InitializeProgress.Invoke(healthInitData);
     }
+
+    // ну естественно нам нужно обновить прогресс, что мы и делаем при каждом его изменении
 
     void ApplyDamage(float amount)
     {

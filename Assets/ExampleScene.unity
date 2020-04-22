@@ -229,7 +229,6 @@ GameObject:
   - component: {fileID: 214537402}
   - component: {fileID: 214537405}
   - component: {fileID: 214537404}
-  - component: {fileID: 214537403}
   m_Layer: 5
   m_Name: Image (1)
   m_TagString: Untagged
@@ -256,20 +255,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: -0.000038146973}
   m_SizeDelta: {x: 1017, y: 249.9}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &214537403
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 214537401}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 119f5f3388c82f14795f91a84a581702, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  progressBarImage: {fileID: 214537404}
-  revert: 0
 --- !u!114 &214537404
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -317,6 +302,7 @@ GameObject:
   - component: {fileID: 234226559}
   - component: {fileID: 234226561}
   - component: {fileID: 234226560}
+  - component: {fileID: 234226562}
   m_Layer: 5
   m_Name: SecondSceneProgressBar
   m_TagString: Untagged
@@ -382,6 +368,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 234226558}
   m_CullTransparentMesh: 0
+--- !u!114 &234226562
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 234226558}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 119f5f3388c82f14795f91a84a581702, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  progressBarImage: {fileID: 214537404}
+  revert: 0
 --- !u!1 &357038746
 GameObject:
   m_ObjectHideFlags: 0
@@ -645,7 +645,6 @@ GameObject:
   - component: {fileID: 893574050}
   - component: {fileID: 893574053}
   - component: {fileID: 893574052}
-  - component: {fileID: 893574051}
   m_Layer: 5
   m_Name: Image (1)
   m_TagString: Untagged
@@ -672,20 +671,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: -0.000038146973}
   m_SizeDelta: {x: 1017, y: 249.9}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &893574051
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 893574049}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a0303eeb088e1a14e85f598a38f9ff85, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  progressBarImage: {fileID: 893574052}
-  revert: 0
 --- !u!114 &893574052
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1280,6 +1265,7 @@ GameObject:
   - component: {fileID: 1688211847}
   - component: {fileID: 1688211849}
   - component: {fileID: 1688211848}
+  - component: {fileID: 1688211850}
   m_Layer: 5
   m_Name: FirstSceneProgressBar
   m_TagString: Untagged
@@ -1344,6 +1330,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1688211846}
   m_CullTransparentMesh: 0
+--- !u!114 &1688211850
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1688211846}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0303eeb088e1a14e85f598a38f9ff85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  progressBarImage: {fileID: 893574052}
+  revert: 0
 --- !u!1 &1852626039
 GameObject:
   m_ObjectHideFlags: 0

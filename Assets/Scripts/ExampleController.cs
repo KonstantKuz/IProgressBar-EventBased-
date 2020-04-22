@@ -15,8 +15,8 @@ public class ExampleController : MonoBehaviour
 
     private void OnEnable()
     {
-        FirstExampleProgressBar.OnProgressFinished += delegate { Finish("Finish on green progressBar! "); };
-        SecondExampleProgressBar.OnProgressFinished += delegate { Finish("Finish on red progressBar! "); };
+        FirstExampleProgressBar.OnProgressFinished += delegate { Finish("<color=green> Finish on green progressBar! </color>"); };
+        SecondExampleProgressBar.OnProgressFinished += delegate { Finish("<color=red> Finish on red progressBar! </color>"); };
     }
 
     // Start is called before the first frame update
@@ -72,14 +72,8 @@ public class ExampleController : MonoBehaviour
             SecondExampleProgressBar.UpdateProgress.Invoke(secondUpdateData);
         }
 
-        if (progress1 > 100)
-            progress1 = 100;
-        if (progress1 < 0)
-            progress1 = 0;
-        if (progress2 > 100)
-            progress2 = 100;
-        if (progress2 < 0)
-            progress2 = 0;
+        progress1 = Mathf.Clamp(progress1, 0, 100);
+        progress2 = Mathf.Clamp(progress2, 0, 100);
     }
 
     void Finish(string message)

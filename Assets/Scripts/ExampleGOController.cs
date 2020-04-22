@@ -37,10 +37,12 @@ public class ExampleGOController : MonoBehaviour
             currHP += Time.deltaTime * 50f;
             exampleBar.UpdateCurrentProgress(currHP);
         }
+
+        currHP = Mathf.Clamp(currHP, 0, 100);
     }
 
     void Death()
     {
-        Debug.Log("Finish in GO progress bar!");
+        Debug.Log("<color=yellow> Finish in GO progress bar! </color>");
     }
 }
