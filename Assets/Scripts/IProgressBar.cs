@@ -40,25 +40,26 @@ public interface IProgressBar
 
     void CheckProgress();          // метод в котором производится проверка текущего значения прогресса
                                    // и вызываются необходимые методы владельца(например если прогресс бар висит на машинке как в шутем)
-                                   // или триггерится событие OnProgressFinishedIn<КонкретныйПрогрессБар>(если тип прогрессбара в сцене всего один)
+                                   // или триггерится событие OnProgressFinished<КонкретныйПрогрессБар>(если тип прогрессбара в сцене всего один)
 
                                    // примечание : например тип TreeHealthIndicator и тип SheepShaveProgressBar могут легко находиться на одной сцене
                                    // и легко управляться разными сущностями с помощью событий
                                    // но только в случае если TreeHealthIndicator и SheepShaveProgressBar в сцене находятся по одному экземпляру
 }
 
-/// SceneProgressBar - интерфейс необходимый для реализации уникальных для конкретной сцены прогресс баров и работы с ним посредством аггрегатора событий
+/// SceneProgressBar - интерфейс необходимый для реализации уникальных для конкретной сцены прогресс баров и работы с ним посредством событий
 /// например прогресс бар дерева из WoodCut - в сцене он уникален и находится в единственном экземпляре
 /// или прогресс бар закинутых в ведра фруктов из Funny-Farm/DropIt
 /// такие прогресс бары должны управляться ИСКЛЮЧИТЕЛЬНО посредством событий таких как
-/// InitializeProgressIn<КонкретныйПрогрессБар> UpdateProgressIn<КонкретныйПрогрессБар> OnProgressFinishedIn<КонкретныйПрогрессБар>
+/// InitializeProgress UpdateProgress 
+/// OnProgressFinished 
 
 public interface SceneProgressBar<T> : IProgressBar where T : class
 {
     OnFinishProgress<T> FinishProgress { get; }
 
     void Initialize(InitialData<T> initData);                // в качестве параметров initData и progressData 
-    void UpdateCurrentProgress(UpdateData<T> progressData);  // выступают контейнеры InitializationData<КонкретныйПрогрессБар> и UpdateProgressData<КонкретныйПрогрессБар>
+    void UpdateCurrentProgress(UpdateData<T> progressData);  // выступают контейнеры InitialData<КонкретныйПрогрессБар> и UpdateData<КонкретныйПрогрессБар>
                                                              // в которых содержатся необходимые параметры
 }
 public struct InitialData<SceneProgressBar>
@@ -95,8 +96,8 @@ public class SceneLineProgressBar<T> : MonoBehaviour, SceneProgressBar<T> where 
     
     public static Action<InitialData<T>> InitializeProgress;
     public static Action<UpdateData<T>> UpdateProgress;
-    public static Action<OnFinishProgress<T>> OnProgressFinished;         // подписка осуществляется только с помощью delegate
-                                                                          // пр-р : КонкретныйПрогрессБар.OnProgressFinished += delegate { метод/функция };
+    public static Action<OnFinishProgress<T>> OnProgressFinished;         // подписку проще осуществлять с помощью delegate
+                                                                          // пр-р : КонкретныйПрогрессБар.OnProgressFinished += delegate { метод/функция с заранее определенными параметрами };
 
     private void OnEnable()
     {
@@ -129,12 +130,12 @@ public class SceneLineProgressBar<T> : MonoBehaviour, SceneProgressBar<T> where 
         UpdateUI();
     }
 
-    public void UpdateUI()                               // логика обновления визуала и инициализации должны быть единственным изменением в коде шаблона
+    public void UpdateUI()
     {
         progressBarImage.fillAmount = CurrentVisualProgress();
     }
 
-    public float CurrentVisualProgress()                 // например тут понадобилось вывести отдельное значение визуального прогресса в зависимости от RevertVisual
+    public float CurrentVisualProgress()
     {
         float CurrentVisualProgress;
 
@@ -205,7 +206,7 @@ public class ScenePointsProgressBar<T> : MonoBehaviour, SceneProgressBar<T> wher
     [SerializeField] private GameObject stagePointPrefab;
     [SerializeField] private GameObject pointsParent;
     private Image[] stagePoints;
-    private int AnimationHash = Animator.StringToHash("StageComplete");
+    private int AnimationHash = Animator.StringToHash("StageComplete");    // пока что анимация воспроизводится через аниматор
 
     [SerializeField] private bool revert;
     public float MinValue { get; private set; }
@@ -377,12 +378,12 @@ public class GOLineProgressBar : MonoBehaviour, GameObjectProgressBar
         UpdateUI();
     }
 
-    public void UpdateUI()                               // логика обновления визуала и инициализации должны быть единственным изменением в коде шаблона
+    public void UpdateUI()
     {
         progressBarImage.fillAmount = CurrentVisualProgress();
     }
 
-    public float CurrentVisualProgress()                 // например тут понадобилось вывести отдельное значение визуального прогресса в зависимости от RevertVisual
+    public float CurrentVisualProgress()
     {
         float CurrentVisualProgress;
 
@@ -460,7 +461,6 @@ public class HealthExampleTreeProgressBar : SceneLineProgressBar<HealthExampleTr
 /// этот скрипт вешаем на прогресс бар и вставляем в поле нужную картинку которая исполняет роль прогрессбара (то есть заполняется/убавляется с помощью свойства fillAmount)
 /// сам прогресс бар готов, инвертировать визуальное направление прогресса можно с помощью RevertVisual
 /// далее в нашем случае например в скрипте дерева нам нужно инициализировать его с помощью события следущим образом
-/// InitializeProgressIn<TreeHealthProgressBar>
 /// 
 public class ExampleTree
 {
