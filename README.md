@@ -28,10 +28,10 @@ public class ExampleTree
 
     public void SubscribeToNecessaryEvents()
     {
-        HealthExampleTreeProgressBar.OnProgressFinished += Cut;
+        HealthExampleTreeProgressBar.OnProgressFinished += delegate { Cut(); };
     }
 
-    void Cut(OnFinishProgress<HealthExampleTreeProgressBar> stageCompleteData)
+    void Cut()
     {
         //DEATH
     }
@@ -82,7 +82,7 @@ public class ExampleTreeController
 
     public void SubscribeToNecessaryEvents()
     {
-        StageExampleTreeProgressBar.OnProgressFinished += FinishGame;
+        StageExampleTreeProgressBar.OnProgressFinished += delegate { FinishGame(); };
     }
 
     void Start()
@@ -112,7 +112,7 @@ public class ExampleTreeController
         StageExampleTreeProgressBar.UpdateProgress.Invoke(stageUpdateData);
     }
 
-    void FinishGame(OnFinishProgress<StageExampleTreeProgressBar> stageCompleteData)
+    void FinishGame()
     {
         //Finish
     }
