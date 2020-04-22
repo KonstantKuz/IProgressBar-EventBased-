@@ -500,7 +500,7 @@ public class ExampleTree
         healthInitData.MaxValue = maxHealth;
         healthInitData.CurrentValue = maxHealth;
 
-        HealthExampleTreeProgressBar.InitializeProgress.Invoke(healthInitData);
+        HealthExampleTreeProgressBar.InitializeProgress(healthInitData);
     }
 
     // ну и естественно нам нужно обновить прогресс бар, что мы и делаем при каждом изменении прогресса
@@ -514,7 +514,7 @@ public class ExampleTree
     private void UpdateHealthBar()
     {
         healthUpdateData.CurrentValue = currentHealth;
-        HealthExampleTreeProgressBar.UpdateProgress.Invoke(healthUpdateData);
+        HealthExampleTreeProgressBar.UpdateProgress(healthUpdateData);
     }
 
 }
@@ -553,7 +553,7 @@ public class ExampleTreeController
         stageInitData.MaxValue = treesCountToWin;
         stageInitData.CurrentValue = 0;
 
-        StageExampleTreeProgressBar.InitializeProgress.Invoke(stageInitData);
+        StageExampleTreeProgressBar.InitializeProgress(stageInitData);
     }
 
     private void InstantiateNewTree()
@@ -566,7 +566,7 @@ public class ExampleTreeController
     private void UpdateStageProgress()
     {
         stageUpdateData.CurrentValue = cuttedTreesCount;
-        StageExampleTreeProgressBar.UpdateProgress.Invoke(stageUpdateData);
+        StageExampleTreeProgressBar.UpdateProgress(stageUpdateData);
     }
 
     private void FinishGame()

@@ -32,7 +32,7 @@ public class ExampleController : MonoBehaviour
         firstInitialData.MaxValue = 100;
         firstInitialData.CurrentValue = progress1;
 
-        FirstExampleProgressBar.InitializeProgress.Invoke(firstInitialData);    
+        FirstExampleProgressBar.InitializeProgress(firstInitialData);    
     }
 
     void InitializeSecondProgressBar()
@@ -41,7 +41,7 @@ public class ExampleController : MonoBehaviour
         secondInitialData.MaxValue = 100;
         secondInitialData.CurrentValue = progress2;
 
-        SecondExampleProgressBar.InitializeProgress.Invoke(secondInitialData);
+        SecondExampleProgressBar.InitializeProgress(secondInitialData);
     }
 
     // Update is called once per frame
@@ -50,33 +50,34 @@ public class ExampleController : MonoBehaviour
         if(Input.GetKey(KeyCode.D))
         {
             progress1 += Time.deltaTime * 50f;
-
-            firstUpdateData.CurrentValue = progress1;
-            FirstExampleProgressBar.UpdateProgress.Invoke(firstUpdateData);
-
             progress2 += Time.deltaTime * 50f;
-
-            secondUpdateData.CurrentValue = progress2;
-            SecondExampleProgressBar.UpdateProgress.Invoke(secondUpdateData);
         }
         if(Input.GetKey(KeyCode.A))
         {
             progress1 -= Time.deltaTime * 50f;
-
-            firstUpdateData.CurrentValue = progress1;
-            FirstExampleProgressBar.UpdateProgress.Invoke(firstUpdateData);
-
             progress2 -= Time.deltaTime * 50f;
-
-            secondUpdateData.CurrentValue = progress2;
-            SecondExampleProgressBar.UpdateProgress.Invoke(secondUpdateData);
         }
+
+        UpdateFirstProgress();
+        UpdateSecondProgress();
 
         progress1 = Mathf.Clamp(progress1, 0, 100);
         progress2 = Mathf.Clamp(progress2, 0, 100);
     }
 
-    void Finish(string message)
+    private void UpdateFirstProgress()
+    {
+        firstUpdateData.CurrentValue = progress1;
+        FirstExampleProgressBar.UpdateProgress(firstUpdateData);
+    }
+
+    private void UpdateSecondProgress()
+    {
+        secondInitialData.CurrentValue = progress2;
+        SecondExampleProgressBar.UpdateProgress(secondUpdateData);
+    }
+
+    private void Finish(string message)
     {
         Debug.Log(message);
     }
