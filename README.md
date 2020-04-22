@@ -1,17 +1,17 @@
 ```C#
-/// КАК ПОЛЬЗОВАТЬСЯ :
-/// допустим нужен новый прогресс бар в сцене например как прогрессбар здоровья дерева
+
+/// КАК ПОЛЬЗОВАТЬСЯ SceneLineProgressBar/ScenePointsProgressBar:
+/// допустим нужен новый прогресс бар в сцене например как прогрессбар здоровья дерева которое нужно срубить
 /// создаем новый скрипт и просто наследуем его от нужного типа прогресс бара
 /// в нашем случае LineProgressBar
 /// 
 /// в итоге мы должны получить ПУСТОЙ скрипт
-public class HealthExampleTreeProgressBar : LineProgressBar<HealthExampleTreeProgressBar>
+public class HealthExampleTreeProgressBar : SceneLineProgressBar<HealthExampleTreeProgressBar>
 {
 }
 /// этот скрипт вешаем на прогресс бар и вставляем в поле нужную картинку которая исполняет роль прогрессбара (то есть заполняется/убавляется с помощью свойства fillAmount)
 /// сам прогресс бар готов, инвертировать визуальное направление прогресса можно с помощью RevertVisual
 /// далее в нашем случае например в скрипте дерева нам нужно инициализировать его с помощью события следущим образом
-/// InitializeProgressIn<TreeHealthProgressBar>
 /// 
 public class ExampleTree
 {
@@ -28,7 +28,7 @@ public class ExampleTree
 
     public void SubscribeToNecessaryEvents()
     {
-        HealthExampleTreeProgressBar.OnProgressFinished += delegate { Cut(); };
+        HealthExampleTreeProgressBar.OnProgressFinished += delegate { Cut(); } ;
     }
 
     void Cut()
@@ -45,10 +45,12 @@ public class ExampleTree
     {
         healthInitData.MinValue = 0;
         healthInitData.MaxValue = maxHealth;
-        healthInitData.CurrentValue = maxHealth; 
+        healthInitData.CurrentValue = maxHealth;
 
         HealthExampleTreeProgressBar.InitializeProgress.Invoke(healthInitData);
     }
+
+    // ну естественно нам нужно обновить прогресс, что мы и делаем при каждом его изменении
 
     void ApplyDamage(float amount)
     {
@@ -64,7 +66,7 @@ public class ExampleTree
 
 }
 /// И похожий пример контроллера в случае если например нужно срубить несколько деревьев
-public class StageExampleTreeProgressBar : LineProgressBar<StageExampleTreeProgressBar>
+public class StageExampleTreeProgressBar : SceneLineProgressBar<StageExampleTreeProgressBar>
 {
 }
 public class ExampleTreeController
