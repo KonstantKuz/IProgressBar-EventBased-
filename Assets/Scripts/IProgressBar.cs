@@ -461,7 +461,8 @@ public class HealthExampleTreeProgressBar : SceneLineProgressBar<HealthExampleTr
 }
 /// этот скрипт вешаем на прогресс бар и вставляем в поле нужную картинку которая исполняет роль прогрессбара (то есть заполняется/убавляется с помощью свойства fillAmount)
 /// сам прогресс бар готов, инвертировать визуальное направление прогресса можно с помощью RevertVisual
-/// далее в нашем случае например в скрипте дерева нам нужно инициализировать его с помощью события следущим образом
+/// далее в нашем случае например в скрипте дерева нам нужно воспроизводить все необходимые манипуляции с этим прогресс баром 
+/// с помощью событий которые он предоставляет
 /// 
 public class ExampleTree
 {
@@ -471,27 +472,29 @@ public class ExampleTree
     InitialData<HealthExampleTreeProgressBar> healthInitData;
     UpdateData<HealthExampleTreeProgressBar> healthUpdateData;
 
-    void OnEnable()
+    private void OnEnable()
     {
         SubscribeToNecessaryEvents();
     }
 
-    public void SubscribeToNecessaryEvents()
+    private void SubscribeToNecessaryEvents()
     {
-        HealthExampleTreeProgressBar.OnProgressFinished += delegate { Cut(); } ;
+        HealthExampleTreeProgressBar.OnProgressFinished += delegate { FallDown(); } ;
     }
 
-    void Cut()
+    private void FallDown()
     {
-        //DEATH
+        //Fall
     }
 
-    void Start()
+    private void Start()
     {
+        currentHealth = maxHealth;
+
         InitializeHealthBar();
     }
 
-    void InitializeHealthBar()
+    private void InitializeHealthBar()
     {
         healthInitData.MinValue = 0;
         healthInitData.MaxValue = maxHealth;
@@ -500,15 +503,15 @@ public class ExampleTree
         HealthExampleTreeProgressBar.InitializeProgress.Invoke(healthInitData);
     }
 
-    // ну естественно нам нужно обновить прогресс, что мы и делаем при каждом его изменении
+    // ну и естественно нам нужно обновить прогресс бар, что мы и делаем при каждом изменении прогресса
 
-    void ApplyDamage(float amount)
+    public void ApplyDamage(float amount)
     {
         currentHealth -= amount;
         UpdateHealthBar();
     }
 
-    void UpdateHealthBar()
+    private void UpdateHealthBar()
     {
         healthUpdateData.CurrentValue = currentHealth;
         HealthExampleTreeProgressBar.UpdateProgress.Invoke(healthUpdateData);
@@ -527,22 +530,24 @@ public class ExampleTreeController
     InitialData<StageExampleTreeProgressBar> stageInitData;
     UpdateData<StageExampleTreeProgressBar> stageUpdateData;
 
-    void OnEnable()
+    private void OnEnable()
     {
         SubscribeToNecessaryEvents();
     }
 
-    public void SubscribeToNecessaryEvents()
+    private void SubscribeToNecessaryEvents()
     {
+        HealthExampleTreeProgressBar.OnProgressFinished += delegate { InstantiateNewTree(); };  // при срубе каждого из деревьев спавнится новое которое в свою очередь
+                                                                                                // инициализирует прогресс бар здоровья дерева по новой
         StageExampleTreeProgressBar.OnProgressFinished += delegate { FinishGame(); };
     }
 
-    void Start()
+    private void Start()
     {
         InitializeStageBar();
     }
 
-    void InitializeStageBar()
+    private void InitializeStageBar()
     {
         stageInitData.MinValue = 0;
         stageInitData.MaxValue = treesCountToWin;
@@ -551,20 +556,20 @@ public class ExampleTreeController
         StageExampleTreeProgressBar.InitializeProgress.Invoke(stageInitData);
     }
 
-    void InstantiateNewTree()
+    private void InstantiateNewTree()
     {
         cuttedTreesCount++;
         //Instantiate new tree
         UpdateStageProgress();
     }
 
-    void UpdateStageProgress()
+    private void UpdateStageProgress()
     {
         stageUpdateData.CurrentValue = cuttedTreesCount;
         StageExampleTreeProgressBar.UpdateProgress.Invoke(stageUpdateData);
     }
 
-    void FinishGame()
+    private void FinishGame()
     {
         //Finish
     }
@@ -582,27 +587,27 @@ public class ExampleGOWithHealth
     private float currentHP;
     private float maxHP;
 
-    void OnEnable()
+    private void OnEnable()
     {
         healthBar.OnProgressFinished += Death;
     }
 
-    void Death()
+    private void Death()
     {
 
     }
 
-    void Start()
+    private void Start()
     {
         InitializeHealthBar();
     }
 
-    void InitializeHealthBar()
+    private void InitializeHealthBar()
     {
         healthBar.Initialize(0, maxHP, currentHP);
     }
 
-    void ApplyDamage(float damage)
+    private void ApplyDamage(float damage)
     {
         currentHP -= damage;
         healthBar.UpdateCurrentProgress(currentHP);
