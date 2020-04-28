@@ -73,11 +73,11 @@ public class ExampleController : MonoBehaviour
 
     private void UpdateSecondProgress()
     {
-        secondInitialData.CurrentValue = progress2;
+        secondUpdateData.CurrentValue = progress2;
         SecondExampleProgressBar.UpdateProgress(secondUpdateData);
     }
 
-    private void Finish(string message)
+    void Finish(string message)
     {
         Debug.Log(message);
     }
