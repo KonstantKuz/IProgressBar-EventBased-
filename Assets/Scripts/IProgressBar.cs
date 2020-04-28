@@ -98,13 +98,14 @@ public class SceneLineProgressBar<T> : MonoBehaviour, SceneProgressBar<T> where 
 
     private void OnEnable()
     {
-        SubscribeToNecessaryEvents();
-    }
-
-    public void SubscribeToNecessaryEvents()
-    {
         InitializeProgress += Initialize;
         UpdateProgress += UpdateCurrentProgress;
+    }
+
+    private void OnDisable()
+    {
+        InitializeProgress -= Initialize;
+        UpdateProgress -= UpdateCurrentProgress;
     }
 
     public void Initialize(InitialData<T> initializationData)
@@ -223,13 +224,14 @@ public class ScenePointsProgressBar<T> : MonoBehaviour, SceneProgressBar<T> wher
 
     private void OnEnable()
     {
-        SubscribeToNecessaryEvents();
-    }
-
-    public void SubscribeToNecessaryEvents()
-    {
         InitializeProgress += Initialize;
         UpdateProgress += UpdateCurrentProgress;
+    }
+
+    private void OnDisable()
+    {
+        InitializeProgress -= Initialize;
+        UpdateProgress -= UpdateCurrentProgress;
     }
 
     public void Initialize(InitialData<T> initializationData)
