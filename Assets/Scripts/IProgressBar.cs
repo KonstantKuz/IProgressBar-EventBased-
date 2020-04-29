@@ -543,7 +543,7 @@ public class GOLineProgressBar : MonoBehaviour, GameObjectProgressBar
         {
             timeElapsed = Time.time - startTime;
 
-            progressBarImage.fillAmount = Mathf.MoveTowards(progressBarImage.fillAmount, CurrentVisualProgress(), timeElapsed / (duration * 1250));
+            progressBarImage.fillAmount = Mathf.MoveTowards(progressBarImage.fillAmount, CurrentVisualProgress(), timeElapsed / duration);
 
             yield return waitForFixedFrame;
         }
