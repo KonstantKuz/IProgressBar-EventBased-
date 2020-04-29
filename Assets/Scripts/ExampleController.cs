@@ -31,7 +31,7 @@ public class ExampleController : MonoBehaviour
         firstInitialData.MinValue = 0;
         firstInitialData.MaxValue = 100;
         firstInitialData.CurrentValue = progress1;
-
+        
         FirstExampleProgressBar.InitializeProgress(firstInitialData);    
     }
 
@@ -40,14 +40,25 @@ public class ExampleController : MonoBehaviour
         secondInitialData.MinValue = 0;
         secondInitialData.MaxValue = 100;
         secondInitialData.CurrentValue = progress2;
-
+        
         SecondExampleProgressBar.InitializeProgress(secondInitialData);
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetKey(KeyCode.D))
+        if (Input.GetKey(KeyCode.Q))
+        {
+            progress1 = 0;
+            progress2 = 0;
+        }
+        if (Input.GetKey(KeyCode.E))
+        {
+            progress1 = 100;
+            progress2 = 100;
+        }
+
+        if (Input.GetKey(KeyCode.D))
         {
             progress1 += Time.deltaTime * 50f;
             progress2 += Time.deltaTime * 50f;

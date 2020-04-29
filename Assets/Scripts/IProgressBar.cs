@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System;
+using System.Collections;
 
 public interface IProgressBar
 {
@@ -70,16 +71,25 @@ public struct UpdateData<SceneProgressBar>
     public float CurrentValue;     // при любом изменении прогресса и соответственно при вызове события обновления
                                    // необходимо передавать текущее значение конкретной величины
                                    // например в случае прогресс баром здоровья в параметр должно записываться текущее здоровье
-
 }
 public struct OnFinishProgress<SceneProgressBar>
 {
 }
 
+
+public enum SmoothType
+{
+    /// <summary> Update progress and visual instantly </summary>
+    None = 0,
+    /// <summary> Update smoothly visual only </summary>
+    VisuallyOnly = 1,
+    /// </summary> Update smoothly progress and visual </summary>
+    ActuallyAndVisually = 2,
+}
+
 public class SceneLineProgressBar<T> : MonoBehaviour, SceneProgressBar<T> where T : class
 {
     [SerializeField] private Image progressBarImage;
-
 
     [SerializeField] private bool revert;
     public float MinValue { get; private set; }
@@ -96,17 +106,31 @@ public class SceneLineProgressBar<T> : MonoBehaviour, SceneProgressBar<T> where 
     public static Action<OnFinishProgress<T>> OnProgressFinished;         // подписку проще осуществлять с помощью delegate
                                                                           // пр-р : КонкретныйПрогрессБар.OnProgressFinished += delegate { метод/функция с заранее определенными параметрами };
 
+    //public static Action<(SmoothType smoothType, float duration)> SetUpSmoothing;    // необходимо для управления плавностью обновления прогресса
+                                                                                     // пр-р КонкретныйПрогрессБар.SetUpSmoothing( (SmoothType.VisualOnly, 1f) );
+    [SerializeField] private SmoothType smoothType = SmoothType.None;
+    [SerializeField] private float duration = 0;
+    private WaitForFixedUpdate waitForFixedFrame = new WaitForFixedUpdate();
+
     private void OnEnable()
     {
         InitializeProgress += Initialize;
         UpdateProgress += UpdateCurrentProgress;
+        //SetUpSmoothing += SetSmoothing;
     }
 
     private void OnDisable()
     {
         InitializeProgress -= Initialize;
         UpdateProgress -= UpdateCurrentProgress;
+        //SetUpSmoothing -= SetSmoothing;
     }
+
+    //private void SetSmoothing((SmoothType smoothType, float duration) smoothSettings)
+    //{
+    //    smoothType = smoothSettings.smoothType;
+    //    duration = smoothSettings.duration;
+    //}
 
     public void Initialize(InitialData<T> initializationData)
     {
@@ -153,11 +177,62 @@ public class SceneLineProgressBar<T> : MonoBehaviour, SceneProgressBar<T> where 
 
     public void UpdateCurrentProgress(UpdateData<T> progressData)
     {
-        CurrentValue = progressData.CurrentValue;
+        switch (smoothType)
+        {
+            case SmoothType.None:
+                {
+                    CurrentValue = progressData.CurrentValue;
+                    CheckProgress();
+                    UpdateUI();
+                }
+                break;
+            case SmoothType.VisuallyOnly:
+                {
+                    CurrentValue = progressData.CurrentValue;
+                    CheckProgress();
+                    StartCoroutine(SmoothUpdateUI());
+                }
+                break;
+            case SmoothType.ActuallyAndVisually:
+                {
+                    StartCoroutine(SmoothUpdateCurrentProgress(progressData.CurrentValue));
+                }
+                break;
+        }
+    }
 
-        CheckProgress();
+    private IEnumerator SmoothUpdateCurrentProgress(float currentValue)
+    {
+        float timeElapsed = 0;
+        float startTime = Time.time;
 
-        UpdateUI();
+        while(CurrentValue != currentValue)
+        {
+            timeElapsed = Time.time - startTime;
+
+            CurrentValue = Mathf.MoveTowards(CurrentValue, currentValue, timeElapsed / duration);
+
+            CheckProgress();
+
+            UpdateUI();
+
+            yield return waitForFixedFrame;
+        }
+    }
+
+    private IEnumerator SmoothUpdateUI()
+    {
+        float timeElapsed = 0;
+        float startTime = Time.time;
+
+        while (progressBarImage.fillAmount != CurrentVisualProgress())
+        {
+            timeElapsed = Time.time - startTime;
+
+            progressBarImage.fillAmount = Mathf.MoveTowards(progressBarImage.fillAmount, CurrentVisualProgress(), timeElapsed / (duration * 1250));
+
+            yield return waitForFixedFrame;
+        }
     }
 
     public float CurrentProgress()
@@ -363,6 +438,16 @@ public class GOLineProgressBar : MonoBehaviour, GameObjectProgressBar
     
     public Action OnProgressFinished { get; set; }
 
+    [SerializeField] private SmoothType smoothType = SmoothType.None;
+    [SerializeField] private float duration = 0;
+    private WaitForFixedUpdate waitForFixedFrame = new WaitForFixedUpdate();
+
+    //public void SetUpSmoothing(SmoothType smoothType, float duration)
+    //{
+    //    this.smoothType = smoothType;
+    //    this.duration = duration;
+    //}
+
     public void Initialize(float minValue, float maxValue, float currentValue)
     {
         Finished = false;
@@ -406,11 +491,62 @@ public class GOLineProgressBar : MonoBehaviour, GameObjectProgressBar
 
     public void UpdateCurrentProgress(float currentValue)
     {
-        CurrentValue = currentValue;
+        switch (smoothType)
+        {
+            case SmoothType.None:
+                {
+                    CurrentValue = currentValue;
+                    CheckProgress();
+                    UpdateUI();
+                }
+                break;
+            case SmoothType.VisuallyOnly:
+                {
+                    CurrentValue = currentValue;
+                    CheckProgress();
+                    StartCoroutine(SmoothUpdateUI());
+                }
+                break;
+            case SmoothType.ActuallyAndVisually:
+                {
+                    StartCoroutine(SmoothUpdateCurrentProgress(currentValue));
+                }
+                break;
+        }
+    }
 
-        CheckProgress();
+    private IEnumerator SmoothUpdateCurrentProgress(float currentValue)
+    {
+        float timeElapsed = 0;
+        float startTime = Time.time;
 
-        UpdateUI();
+        while (CurrentValue != currentValue)
+        {
+            timeElapsed = Time.time - startTime;
+
+            CurrentValue = Mathf.MoveTowards(CurrentValue, currentValue, timeElapsed / duration);
+
+            CheckProgress();
+
+            UpdateUI();
+
+            yield return waitForFixedFrame;
+        }
+    }
+
+    private IEnumerator SmoothUpdateUI()
+    {
+        float timeElapsed = 0;
+        float startTime = Time.time;
+
+        while (progressBarImage.fillAmount != CurrentVisualProgress())
+        {
+            timeElapsed = Time.time - startTime;
+
+            progressBarImage.fillAmount = Mathf.MoveTowards(progressBarImage.fillAmount, CurrentVisualProgress(), timeElapsed / (duration * 1250));
+
+            yield return waitForFixedFrame;
+        }
     }
 
     public float CurrentProgress()
@@ -461,7 +597,17 @@ public class GOLineProgressBar : MonoBehaviour, GameObjectProgressBar
 public class HealthExampleTreeProgressBar : SceneLineProgressBar<HealthExampleTreeProgressBar>
 {
 }
-/// этот скрипт вешаем на прогресс бар и вставляем в поле нужную картинку которая исполняет роль прогрессбара (то есть заполняется/убавляется с помощью свойства fillAmount)
+/// этот скрипт вешаем на прогресс бар и вставляем в поле нужную картинку 
+/// которая исполняет роль прогрессбара (то есть заполняется/убавляется с помощью свойства fillAmount)
+/// 
+/// в зависимости от необходимости можно установить тип обновления прогресс бара
+/// SmoothType.None - стоит по дефолту, обновление прогресса и фактического и визуального происходит сразу после вызова соответствующего метода/события
+/// SmoothType.VisuallyOnly - фактический прогресс будет обновлен моментально
+/// и значит если CurrentValue достигло нужного значения OnProgressFinished будет вызван моментально
+/// НО визуально прогресс будет плавно обновлен в течение времени ~ Duration
+/// SmoothType.ActuallyAndVisually - прогресс будет плавно обновлен в течение времени == Duration и визульно и фактически
+/// и значит если CurrentValue в контроллере (тот кто вызывает метод/событие обновления)
+/// достигло нужного значения, OnProgressFinished будет вызван с задержкой ~ Duration
 /// сам прогресс бар готов, инвертировать визуальное направление прогресса можно с помощью RevertVisual
 /// далее в нашем случае например в скрипте дерева нам нужно воспроизводить все необходимые манипуляции с этим прогресс баром 
 /// с помощью событий которые он предоставляет
