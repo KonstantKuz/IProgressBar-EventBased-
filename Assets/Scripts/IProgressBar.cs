@@ -5,25 +5,13 @@ using System.Collections;
 
 public interface IProgressBar
 {
-    bool Finished { get; }         // необходимо для одноразового вызова события OnProgressFinished
-    
-    
-    float MinValue { get; }        // MinValue олицетворяет нижнюю границу прогресса
-                                   // в зависимости от поведения прогресса (увеличение/уменьшение)
-                                   // будет производиться соответствующий отсчет (от минимального/к минимальному)
-                                   // MinValue всегда должен быть меньше MaxValue и в процентном соотношении олицетворяет 0%
+    float CurrentProgress();       // значение прогресса считается по формуле
+                                   // (CurrentValue - MinValue)/(MaxValue - MinValue)
+                                   // которое в итоге возвращает значение прогресса в промежутке от 0 до 1
 
-    float MaxValue { get; }        // MaxValue олицетворяет верхнюю границу прогресса
-                                   // в зависимости от поведения прогресса (увеличение/уменьшение) 
-                                   // будет производиться соответствующий отсчет (к максимальному/от максимального)
-                                   // процентном соотношении олицетворяет 100%
+                                   // actual progress in percentage (returns value between 0 and 1)
+                                   // calculates using formula (CurrentValuue - MinValue)/(MaxValue - MinValue)
 
-    float CurrentValue { get; }    // при инициализации значение CurrentValue нужно задавать в зависимости от того какое поведение у прогресса
-                                   // если прогресс увеличивается - логично что текущее значение должно равняться минимальному значению
-                                   // если прогресс уменьшается - логично что текущее значение должно равняться максимальному значению
-
-
-    bool RevertVisual { get; }     // инвертирует поведение прогресс бара визуально
 
     bool Decrease { get; }         // необходимо для проверки поведения фактического прогресса
                                    // устанавливается автоматически при инициализации
@@ -31,16 +19,62 @@ public interface IProgressBar
                                    // и вызов события OnProgressFinished будет осуществлен только в случае CurrentProgress == 0
                                    // в случае CurrentValue == MinValue ожидается увеличение
                                    // и вызов события OnProgressFinished будет осуществлен только в случае CurrentProgress == 1
+                                   
+                                   // representation of actual progress behaviour
+                                   // should be sets automatically on initialization
+                                   // if CurrentValue == MaxValue progress will be decreasing (need to set Decrease = true)
+                                   // and OnProgressFinished will be called only when CurrentProgress() == 0
+                                   // if CurrentValue == MinValue progress will be increasing (need to set Decrease = false)
+                                   // and OnProgressFinished will be called only when CurrentProgress() == 1
 
 
-    float CurrentProgress();       // значение прогресса считается по формуле
-                                   // (CurrentValue - MinValue)/(MaxValue - MinValue)
-                                   // которое в итоге возвращает значение прогресса в промежутке от 0 до 1
+    bool Finished { get; }         // private and needs just for make only one call OnProgressFinished
+    
+    
+    float MinValue { get; }        // MinValue олицетворяет нижнюю границу прогресса
+                                   // в зависимости от поведения прогресса (увеличение/уменьшение)
+                                   // будет производиться соответствующий отсчет (от минимального/к минимальному)
+                                   // MinValue всегда должен быть меньше MaxValue и в процентном соотношении олицетворяет 0%
 
+                                   // MinValue presented as bottom point of progress
+                                   // in dependency from progress beahviour (increases or decreases)
+                                   // progress will be calculate from MinValue or to MinValue
+                                   // MinValue always should be less than MaxValue
+                                   // in percents presented as 0% (or actually 0 as CurrentProgress())
+
+    float MaxValue { get; }        // MaxValue олицетворяет верхнюю границу прогресса
+                                   // в зависимости от поведения прогресса (увеличение/уменьшение) 
+                                   // будет производиться соответствующий отсчет (к максимальному/от максимального)
+                                   // процентном соотношении олицетворяет 100%
+                                   
+                                   // MaxValue presented as top point of progress
+                                   // in dependency from progress beahviour (increases or decreases)
+                                   // in percents presented as 100% (or actually 1 as CurrentProgress())
+
+    float CurrentValue { get; }    // при инициализации значение CurrentValue нужно задавать в зависимости от того какое поведение у прогресса
+                                   // если прогресс увеличивается - логично что текущее значение должно равняться минимальному значению
+                                   // если прогресс уменьшается - логично что текущее значение должно равняться максимальному значению
+                                   
+                                   // in dependency from progress beahviour (increases or decreases)
+                                   // CurrentValue should be соответствующим
+                                   // if progress increases - CurrentValue sholud be equals to MinValue
+                                   // if progress decreases - CurrentValue should be equals to MaxValue
+
+
+    bool RevertVisual { get; }     // инвертирует поведение прогресс бара визуально
+                                   
+                                   // just for invert visual representaion of progress
+
+    
     void UpdateUI();               // метод в котором обновляется визуал прогресса который в идеале может быть каким угодно)
+                                   
+                                   // method in wich visual representation of progress should be updated
 
     void CheckProgress();          // метод в котором производится проверка текущего значения прогресса
                                    // и триггерится событие OnProgressFinished
+                                   
+                                   // method in wich checks CurrentProgress()
+                                   // and calls OnProgressFinished
 
                                    // примечание : например тип TreeHealthIndicator и тип SheepShaveProgressBar могут легко находиться на одной сцене
                                    // и легко управляться разными сущностями с помощью событий
@@ -51,14 +85,20 @@ public interface IProgressBar
 /// такие прогресс бары должны управляться ИСКЛЮЧИТЕЛЬНО посредством событий таких как
 /// InitializeProgress UpdateProgress 
 /// OnProgressFinished 
+/// SceneProgressBar - needs for unique progress bars wiht only one instance on whole scene
+/// initialization and update of this type of progress bars 
+/// makes only using соответствующие static events InitializeProgress & UpdateProgress
 
 public interface SceneProgressBar<T> : IProgressBar where T : class
 {
     OnFinishProgress<T> FinishProgress { get; }
 
-    void Initialize(InitialData<T> initData);                // в качестве параметров initData и progressData 
+    void Initialize(InitialData<T> initData);                // в качестве параметров initData и progressData
     void UpdateCurrentProgress(UpdateData<T> progressData);  // выступают контейнеры InitialData<КонкретныйПрогрессБар> и UpdateData<КонкретныйПрогрессБар>
                                                              // в которых содержатся необходимые параметры
+                                                             
+                                                             // parameters  initData and progressData represented as containers with necessary values
+                                                             // InitialData<ConcreteProgressBar> UpdateData<ConcreteProgressBar>
 }
 public struct InitialData<SceneProgressBar>
 {
@@ -71,6 +111,9 @@ public struct UpdateData<SceneProgressBar>
     public float CurrentValue;     // при любом изменении прогресса и соответственно при вызове события обновления
                                    // необходимо передавать текущее значение конкретной величины
                                    // например в случае прогресс баром здоровья в параметр должно записываться текущее здоровье
+                                   
+                                   // on any change of progress should be called UpdateProgress
+                                   // for example in case with health progress bar in parameter CurrentValue should be written current health
 }
 public struct OnFinishProgress<SceneProgressBar>
 {
@@ -79,11 +122,11 @@ public struct OnFinishProgress<SceneProgressBar>
 
 public enum SmoothType
 {
-    /// <summary> Update progress and visual instantly </summary>
+    /// <summary> Update actual progress and visual instantly </summary>
     None = 0,
     /// <summary> Update smoothly visual only </summary>
     VisuallyOnly = 1,
-    /// </summary> Update smoothly progress and visual </summary>
+    /// </summary> Update smoothly actual progress and visual </summary>
     ActuallyAndVisually = 2,
 }
 
@@ -105,9 +148,9 @@ public class SceneLineProgressBar<T> : MonoBehaviour, SceneProgressBar<T> where 
     public static Action<UpdateData<T>> UpdateProgress;
     public static Action<OnFinishProgress<T>> OnProgressFinished;         // подписку проще осуществлять с помощью delegate
                                                                           // пр-р : КонкретныйПрогрессБар.OnProgressFinished += delegate { метод/функция с заранее определенными параметрами };
-
-    //public static Action<(SmoothType smoothType, float duration)> SetUpSmoothing;    // необходимо для управления плавностью обновления прогресса
-                                                                                     // пр-р КонкретныйПрогрессБар.SetUpSmoothing( (SmoothType.VisualOnly, 1f) );
+                                                                          //
+                                                                          // subscribe only using delegate : ConcreteProgressBar.OnProgressFinished += { SomeFunc(0, Vector3.forward); };
+                                                                          
     [SerializeField] private SmoothType smoothType = SmoothType.None;
     [SerializeField] private float duration = 0;
     private WaitForFixedUpdate waitForFixedFrame = new WaitForFixedUpdate();
@@ -116,22 +159,14 @@ public class SceneLineProgressBar<T> : MonoBehaviour, SceneProgressBar<T> where 
     {
         InitializeProgress += Initialize;
         UpdateProgress += UpdateCurrentProgress;
-        //SetUpSmoothing += SetSmoothing;
     }
 
     private void OnDisable()
     {
         InitializeProgress -= Initialize;
         UpdateProgress -= UpdateCurrentProgress;
-        //SetUpSmoothing -= SetSmoothing;
     }
-
-    //private void SetSmoothing((SmoothType smoothType, float duration) smoothSettings)
-    //{
-    //    smoothType = smoothSettings.smoothType;
-    //    duration = smoothSettings.duration;
-    //}
-
+    
     public void Initialize(InitialData<T> initializationData)
     {
         FinishProgress = new OnFinishProgress<T>();
@@ -147,7 +182,6 @@ public class SceneLineProgressBar<T> : MonoBehaviour, SceneProgressBar<T> where 
             $"\n MinValue = {MinValue}, MaxValue = {MaxValue}, CurrentValue = {CurrentValue}." +
             $"\n Is this progress decreasing?={Decrease}." +
             $"\n Is this progress visual reverted?= {RevertVisual}");
-        //логика инициализации и обновления визуала в идеале должны быть единственным изменением в коде шаблона но ничто не идеально))
 
         UpdateUI();
     }
@@ -281,7 +315,7 @@ public class ScenePointsProgressBar<T> : MonoBehaviour, SceneProgressBar<T> wher
     [SerializeField] private bool Animate;
 
     private Image[] stagePoints;
-    private int AnimationHash = Animator.StringToHash("StageComplete");    // пока что анимация воспроизводится через аниматор
+    private int AnimationHash = Animator.StringToHash("StageComplete");
 
     [SerializeField] private bool revert;
     public float MinValue { get; private set; }
@@ -441,13 +475,7 @@ public class GOLineProgressBar : MonoBehaviour, GameObjectProgressBar
     [SerializeField] private SmoothType smoothType = SmoothType.None;
     [SerializeField] private float duration = 0;
     private WaitForFixedUpdate waitForFixedFrame = new WaitForFixedUpdate();
-
-    //public void SetUpSmoothing(SmoothType smoothType, float duration)
-    //{
-    //    this.smoothType = smoothType;
-    //    this.duration = duration;
-    //}
-
+    
     public void Initialize(float minValue, float maxValue, float currentValue)
     {
         Finished = false;
@@ -461,7 +489,6 @@ public class GOLineProgressBar : MonoBehaviour, GameObjectProgressBar
             $"\n MinValue = {MinValue}, MaxValue = {MaxValue}, CurrentValue = {CurrentValue}." +
             $"\n Is this progress decreasing?={Decrease}." +
             $"\n Is this progress visual reverted?= {RevertVisual}");
-        //логика инициализации и обновления визуала в идеале должны быть единственным изменением в коде шаблона но ничто не идеально))
 
         UpdateUI();
     }
@@ -479,7 +506,6 @@ public class GOLineProgressBar : MonoBehaviour, GameObjectProgressBar
         {
             float CurrentRevertedValue = MaxValue - CurrentValue;
             CurrentVisualProgress = (CurrentRevertedValue - MinValue) / (MaxValue - MinValue);
-
         }
         else
         {
@@ -594,12 +620,28 @@ public class GOLineProgressBar : MonoBehaviour, GameObjectProgressBar
 /// в нашем случае LineProgressBar
 /// 
 /// в итоге мы должны получить ПУСТОЙ скрипт
+/// 
+/// How to use SceneLineProgressBar/ScenePointsProgressBar
+/// if you need to control progress of something in scene
+/// and the progress can be only one in scene (for example health of tree that we need to chop)
+/// create new fully epmty script and inheirit it from SceneLineProgressBar just like that
+/// 
 public class HealthExampleTreeProgressBar : SceneLineProgressBar<HealthExampleTreeProgressBar>
 {
 }
+
+/// put this script to progress bar gameobject and fill all properties
+/// if you need to smooth progress you can set it using SmoothType
+/// 
+/// SmoothType.None - visually and actually progress will be updated instantly
+/// 
+/// SmoothType.VisuallyOnly - progress will be updated smoothly visually only
+/// OnProgressFinished will be called instantly if CurrentValue will be 
+/// 
+/// SmoothType.ActuallyAndVisually - progress will be updated smoothly visually and actually
+/// 
 /// этот скрипт вешаем на прогресс бар и вставляем в поле нужную картинку 
 /// которая исполняет роль прогрессбара (то есть заполняется/убавляется с помощью свойства fillAmount)
-/// 
 /// в зависимости от необходимости можно установить тип обновления прогресс бара
 /// SmoothType.None - стоит по дефолту, обновление прогресса и фактического и визуального происходит сразу после вызова соответствующего метода/события
 /// SmoothType.VisuallyOnly - фактический прогресс будет обновлен моментально
