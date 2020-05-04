@@ -272,18 +272,18 @@ public class SceneLineProgressBar<T> : MonoBehaviour, SceneProgressBar<T> where 
     }
 }
 
-public class ScenePointsProgressBar<T> : MonoBehaviour, SceneProgressBar<T> where T : class
+public class SceneStageProgressBar<T> : MonoBehaviour, SceneProgressBar<T> where T : class
 {
-    [SerializeField] private Sprite currentStageSprite;
-    [SerializeField] private Sprite completeStageSprite;
-    [SerializeField] private GameObject stagePointImagePrefab;
-    [SerializeField] private GameObject stagePointsParentPanel;
-    [SerializeField] private bool Animate;
+    [SerializeField] private Sprite currentStageSprite = null;
+    [SerializeField] private Sprite completeStageSprite = null;
+    [SerializeField] private GameObject stagePointImagePrefab = null;
+    [SerializeField] private GameObject stagePointsParentPanel = null;
+    [SerializeField] private bool Animate = false;
 
     private Image[] stagePoints;
-    private int AnimationHash = Animator.StringToHash("StageComplete");    // пока что анимация воспроизводится через аниматор
+    private protected int AnimationHash = 0;
 
-    [SerializeField] private bool revert;
+    [SerializeField] private bool revert = false;
     public float MinValue { get; private set; }
     public float MaxValue { get; private set; }
     public float CurrentValue { get; private set; }
@@ -338,6 +338,7 @@ public class ScenePointsProgressBar<T> : MonoBehaviour, SceneProgressBar<T> wher
         for (int i = 0; i < MaxValue; i++)
         {
             stagePoints[i] = Instantiate(stagePointImagePrefab, stagePointsParentPanel.transform).GetComponent<Image>();
+            stagePoints[i].preserveAspect = true;
         }
 
         if (RevertVisual)
@@ -362,11 +363,22 @@ public class ScenePointsProgressBar<T> : MonoBehaviour, SceneProgressBar<T> wher
 
             stagePoints[completeStageIndex].sprite = completeStageSprite;
             if(Animate)
-                stagePoints[completeStageIndex].GetComponent<Animator>().Play(AnimationHash);
+            {
+                Animator completeStagePointAnimator = stagePoints[completeStageIndex].GetComponent<Animator>();
+                if (AnimationHash == 0 || completeStagePointAnimator == null)
+                {
+                    Debug.LogWarning("If you want to animate stege point set AnimationHash in awake of stage bar script and add an Animator component to stage point prefab with necessary animation.");
+                }
+                else
+                {
+                    completeStagePointAnimator.CrossFadeInFixedTime(AnimationHash, 0,0,0);
+                }
+            }
 
             if (CurrentValue != MaxValue)
+            {
                 stagePoints[currentStageIndex].sprite = currentStageSprite;
-
+            }
         }
     }
 
@@ -441,12 +453,6 @@ public class GOLineProgressBar : MonoBehaviour, GameObjectProgressBar
     [SerializeField] private SmoothType smoothType = SmoothType.None;
     [SerializeField] private float duration = 0;
     private WaitForFixedUpdate waitForFixedFrame = new WaitForFixedUpdate();
-
-    //public void SetUpSmoothing(SmoothType smoothType, float duration)
-    //{
-    //    this.smoothType = smoothType;
-    //    this.duration = duration;
-    //}
 
     public void Initialize(float minValue, float maxValue, float currentValue)
     {
@@ -588,7 +594,7 @@ public class GOLineProgressBar : MonoBehaviour, GameObjectProgressBar
 
 
 
-/// КАК ПОЛЬЗОВАТЬСЯ SceneLineProgressBar/ScenePointsProgressBar:
+/// КАК ПОЛЬЗОВАТЬСЯ SceneLineProgressBar/SceneStageProgressBar:
 /// допустим нужен новый прогресс бар в сцене например как прогрессбар здоровья дерева которое нужно срубить
 /// создаем новый скрипт и просто наследуем его от нужного типа прогресс бара
 /// в нашем случае LineProgressBar
