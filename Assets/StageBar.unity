@@ -155,8 +155,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0.000062943, y: 40.086914}
-  m_SizeDelta: {x: 835.3, y: 118.53}
+  m_AnchoredPosition: {x: 12.978, y: 40.086914}
+  m_SizeDelta: {x: 796.93, y: 118.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &719419769
 MonoBehaviour:
@@ -405,7 +405,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentStage: 0
-  stageToWin: 10
+  stageToWin: 4
 --- !u!4 &1219416484
 Transform:
   m_ObjectHideFlags: 0
@@ -527,8 +527,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 77.5, y: -151.99998}
-  m_SizeDelta: {x: -155, y: -680}
+  m_AnchoredPosition: {x: 103.4, y: -151.99998}
+  m_SizeDelta: {x: -206.9, y: -680}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1871714098
 MonoBehaviour:
@@ -574,6 +574,9 @@ MonoBehaviour:
     and fill properties like in "ExampleStageBar"
 
     Remove Example Stage Bar component
+
+    If
+    you need you can change rect width &/or height to get best size of stage points
 
     If
     you want you can change animation clip of complete animation in stage point animator'
@@ -733,7 +736,7 @@ PrefabInstance:
     - target: {fileID: 582986955459019024, guid: bc501b87f4fb4ee42acb3996472c1ea5,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 80
+      value: 104.95
       objectReference: {fileID: 0}
     - target: {fileID: 582986955459019024, guid: bc501b87f4fb4ee42acb3996472c1ea5,
         type: 3}
@@ -872,7 +875,7 @@ PrefabInstance:
     - target: {fileID: 2857495396302774564, guid: f40d1a2a88678414f85c7390f908c344,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -107
+      value: -100
       objectReference: {fileID: 0}
     - target: {fileID: 2857495396302774564, guid: f40d1a2a88678414f85c7390f908c344,
         type: 3}
@@ -882,7 +885,7 @@ PrefabInstance:
     - target: {fileID: 2857495396302774564, guid: f40d1a2a88678414f85c7390f908c344,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 150
+      value: 40
       objectReference: {fileID: 0}
     - target: {fileID: 2857495396302774564, guid: f40d1a2a88678414f85c7390f908c344,
         type: 3}

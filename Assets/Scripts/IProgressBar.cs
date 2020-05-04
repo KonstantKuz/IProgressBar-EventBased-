@@ -369,11 +369,11 @@ public class SceneStageProgressBar<T> : MonoBehaviour, SceneProgressBar<T> where
         int currentStageIndex = (int)CurrentValue;
         int nextStageIndex = (int)CurrentValue + 1;
 
-        if (StageIndexIsNotOutOfRange(nextStageIndex))
+        if (IndexIsNotOutOfRange(nextStageIndex, 1, stagePoints.Length))
         {
             SetStagePointSprite(nextStageIndex, nextStageSprite);
         }
-        if (StageIndexIsNotOutOfRange(completeStageIndex))
+        if (IndexIsNotOutOfRange(completeStageIndex, 0, stagePoints.Length))
         {
             SetStagePointSprite(completeStageIndex, completeStageSprite);
 
@@ -382,15 +382,15 @@ public class SceneStageProgressBar<T> : MonoBehaviour, SceneProgressBar<T> where
                 AnimateStagePoint(completeStageIndex);
             }
         }
-        if (StageIndexIsNotOutOfRange(currentStageIndex))
+        if (IndexIsNotOutOfRange(currentStageIndex, 0, stagePoints.Length))
         {
             SetStagePointSprite(currentStageIndex, currentStageSprite);
         }
     }
 
-    private bool StageIndexIsNotOutOfRange(int index)
+    private bool IndexIsNotOutOfRange(int index, int min, int max)
     {
-        return (index >= 0 && index < stagePoints.Length);
+        return (index >= min && index < max);
     }
 
     private void SetStagePointSprite(int pointIndex, Sprite sprite)
