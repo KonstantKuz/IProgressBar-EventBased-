@@ -479,6 +479,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2bbb52fe9d13290408dabe0e2a0e5713, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  nextStageSprite: {fileID: 21300000, guid: 3238e8603fb74364fb047e830bb4f6b3, type: 3}
   currentStageSprite: {fileID: 21300000, guid: eaca8e66a69c3524a98edb9d57ee34e8, type: 3}
   completeStageSprite: {fileID: 21300000, guid: 9d8ab565278b7b5478be2818a4632d35,
     type: 3}
@@ -573,6 +574,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2bbb52fe9d13290408dabe0e2a0e5713, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  nextStageSprite: {fileID: 21300000, guid: 3238e8603fb74364fb047e830bb4f6b3, type: 3}
   currentStageSprite: {fileID: 21300000, guid: eaca8e66a69c3524a98edb9d57ee34e8, type: 3}
   completeStageSprite: {fileID: 21300000, guid: 9d8ab565278b7b5478be2818a4632d35,
     type: 3}

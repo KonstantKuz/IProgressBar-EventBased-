@@ -43,6 +43,11 @@ public class StageController : MonoBehaviour
             currentStage++;
             UpdateStageBar();
         }
+        if(Input.GetKeyDown(KeyCode.A))
+        {
+            currentStage--;
+            UpdateStageBar();
+        }
     }
 
     private void UpdateStageBar()

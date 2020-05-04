@@ -274,6 +274,7 @@ public class SceneLineProgressBar<T> : MonoBehaviour, SceneProgressBar<T> where 
 
 public class SceneStageProgressBar<T> : MonoBehaviour, SceneProgressBar<T> where T : class
 {
+    [SerializeField] private Sprite nextStageSprite = null;
     [SerializeField] private Sprite currentStageSprite = null;
     [SerializeField] private Sprite completeStageSprite = null;
     [SerializeField] private GameObject stagePointImagePrefab = null;
@@ -351,34 +352,54 @@ public class SceneStageProgressBar<T> : MonoBehaviour, SceneProgressBar<T> where
                                                           // что работать с ним в итоге все равно можно будет так же как и с этими двумя
         }
 
-        stagePoints[0].sprite = currentStageSprite;
+        SetStagePointSprite(0, currentStageSprite);
     }
 
     public void UpdateUI()
     {
-        if (CurrentValue != 0)
+        int completeStageIndex = (int)CurrentValue - 1;
+        int currentStageIndex = (int)CurrentValue;
+        int nextStageIndex = (int)CurrentValue + 1;
+
+        if (StageIndexIsNotOutOfRange(nextStageIndex))
         {
-            int completeStageIndex = (int)CurrentValue - 1;
-            int currentStageIndex = (int)CurrentValue;
+            SetStagePointSprite(nextStageIndex, nextStageSprite);
+        }
+        if (StageIndexIsNotOutOfRange(completeStageIndex))
+        {
+            SetStagePointSprite(completeStageIndex, completeStageSprite);
 
-            stagePoints[completeStageIndex].sprite = completeStageSprite;
-            if(Animate)
+            if (Animate)
             {
-                Animator completeStagePointAnimator = stagePoints[completeStageIndex].GetComponent<Animator>();
-                if (AnimationHash == 0 || completeStagePointAnimator == null)
-                {
-                    Debug.LogWarning("If you want to animate stege point set AnimationHash in awake of stage bar script and add an Animator component to stage point prefab with necessary animation.");
-                }
-                else
-                {
-                    completeStagePointAnimator.CrossFadeInFixedTime(AnimationHash, 0,0,0);
-                }
+                AnimateStagePoint(completeStageIndex);
             }
+        }
+        if (StageIndexIsNotOutOfRange(currentStageIndex))
+        {
+            SetStagePointSprite(currentStageIndex, currentStageSprite);
+        }
+    }
 
-            if (CurrentValue != MaxValue)
-            {
-                stagePoints[currentStageIndex].sprite = currentStageSprite;
-            }
+    private bool StageIndexIsNotOutOfRange(int index)
+    {
+        return (index >= 0 && index < stagePoints.Length);
+    }
+
+    private void SetStagePointSprite(int pointIndex, Sprite sprite)
+    {
+        stagePoints[pointIndex].sprite = sprite;
+    }
+
+    private void AnimateStagePoint(int completeStageIndex)
+    {
+        Animator completeStagePointAnimator = stagePoints[completeStageIndex].GetComponent<Animator>();
+        if (AnimationHash == 0 || completeStagePointAnimator == null)
+        {
+            Debug.LogWarning("If you want to animate stage point set 'AnimationHash' in stage bar script and add an Animator component to stage point prefab with necessary animation.");
+        }
+        else
+        {
+            completeStagePointAnimator.CrossFadeInFixedTime(AnimationHash, 0, 0, 0);
         }
     }
 
