@@ -334,6 +334,14 @@ public class SceneStageProgressBar<T> : MonoBehaviour, SceneProgressBar<T> where
 
     private void InitializeUI()
     {
+        if(stagePoints != null)
+        {
+            for (int i = 0; i < stagePoints.Length; i++)
+            {
+                Destroy(stagePoints[i].gameObject);
+            }
+        }
+
         stagePoints = new Image[(int)MaxValue];
 
         for (int i = 0; i < MaxValue; i++)

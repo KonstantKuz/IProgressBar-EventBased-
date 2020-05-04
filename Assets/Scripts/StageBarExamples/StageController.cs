@@ -4,20 +4,28 @@ using UnityEngine;
 
 public class StageController : MonoBehaviour
 {
-    private int currentStage = 0;
-    private int stageToWin = 10;
+    [SerializeField] private int currentStage = 0;
+    [SerializeField] private int stageToWin = 10;
 
     InitialData<ExampleStageBar> initData;
     UpdateData<ExampleStageBar> updateData;
 
     private void OnEnable()
     {
-        ExampleStageBar.OnProgressFinished += delegate { Win(); };
+        ExampleStageBar.OnProgressFinished += delegate { StartCoroutine(Win()); };
     }
 
-    private void Win()
+    private void OnDisable()
+    {
+        ExampleStageBar.OnProgressFinished -= delegate { StartCoroutine(Win()); };
+    }
+
+    private IEnumerator Win()
     {
         Debug.Log("<color=green> Win! </color>");
+        yield return new WaitForSeconds(0.5f);
+        Debug.Log("Random reinitialization stagebar");
+        RandomInitialize();
     }
 
     // Start is called before the first frame update
@@ -25,7 +33,7 @@ public class StageController : MonoBehaviour
     {
         InitializeStageBar();
     }
-
+    
     private void InitializeStageBar()
     {
         initData.MinValue = 0;
@@ -33,6 +41,14 @@ public class StageController : MonoBehaviour
         initData.CurrentValue = currentStage;
 
         ExampleStageBar.InitializeProgress(initData);
+    }
+
+    private void RandomInitialize()
+    {
+        currentStage = 0;
+        stageToWin = Random.Range(3, 10);
+
+        InitializeStageBar();
     }
 
     // Update is called once per frame
@@ -48,6 +64,8 @@ public class StageController : MonoBehaviour
             currentStage--;
             UpdateStageBar();
         }
+
+        currentStage = Mathf.Clamp(currentStage, 0, stageToWin);
     }
 
     private void UpdateStageBar()
