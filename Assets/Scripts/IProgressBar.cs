@@ -702,7 +702,7 @@ public class ExampleTree
 
 }
 /// И похожий пример контроллера в случае если например нужно срубить несколько деревьев
-public class StageExampleTreeProgressBar : SceneLineProgressBar<StageExampleTreeProgressBar>
+public class StageExampleTreeProgressBar : SceneStageProgressBar<StageExampleTreeProgressBar>
 {
 }
 public class ExampleTreeController

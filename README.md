@@ -1,6 +1,6 @@
 ```C#
 
-/// КАК ПОЛЬЗОВАТЬСЯ SceneLineProgressBar/ScenePointsProgressBar:
+/// КАК ПОЛЬЗОВАТЬСЯ SceneLineProgressBar/SceneStageProgressBar:
 /// допустим нужен новый прогресс бар в сцене например как прогрессбар здоровья дерева которое нужно срубить
 /// создаем новый скрипт и просто наследуем его от нужного типа прогресс бара
 /// в нашем случае LineProgressBar
@@ -79,7 +79,7 @@ public class ExampleTree
 
 }
 /// И похожий пример контроллера в случае если например нужно срубить несколько деревьев
-public class StageExampleTreeProgressBar : SceneLineProgressBar<StageExampleTreeProgressBar>
+public class StageExampleTreeProgressBar : SceneStageProgressBar<StageExampleTreeProgressBar>
 {
 }
 public class ExampleTreeController
