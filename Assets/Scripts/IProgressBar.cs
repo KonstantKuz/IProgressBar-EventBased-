@@ -329,7 +329,7 @@ public class SceneStageProgressBar<T> : MonoBehaviour, SceneProgressBar<T> where
 
         InitializeUI();  // в этом прогресс баре как и возможно в других требуется дополнительно логика инициализации визуала
 
-        UpdateUI();
+        //UpdateUI();
     }
 
     private void InitializeUI()
@@ -350,24 +350,24 @@ public class SceneStageProgressBar<T> : MonoBehaviour, SceneProgressBar<T> where
             stagePoints[i].preserveAspect = true;
         }
 
-        if (RevertVisual)
-        {
-            System.Array.Reverse(stagePoints);            // магия реверса визула тут происходит совсем по другому
-                                                          // однако код реализации интерфейсов по большей части не изменен в обоих шаблонах
-                                                          // если вдруг понадобится еще один нетипичный вид прогресс бара
-                                                          // и если я окажусь прав, то написать его по шаблону не составит большого труда
-                                                          // а даже если и составит то все равно самое главное это то
-                                                          // что работать с ним в итоге все равно можно будет так же как и с этими двумя
-        }
+        // if (RevertVisual)
+        // {
+        //     System.Array.Reverse(stagePoints);            // магия реверса визула тут происходит совсем по другому
+        //                                                   // однако код реализации интерфейсов по большей части не изменен в обоих шаблонах
+        //                                                   // если вдруг понадобится еще один нетипичный вид прогресс бара
+        //                                                   // и если я окажусь прав, то написать его по шаблону не составит большого труда
+        //                                                   // а даже если и составит то все равно самое главное это то
+        //                                                   // что работать с ним в итоге все равно можно будет так же как и с этими двумя
+        // }
 
         SetStagePointSprite(0, currentStageSprite);
     }
 
     public void UpdateUI()
     {
-        int completeStageIndex = (int)CurrentValue - 1;
-        int currentStageIndex = (int)CurrentValue;
-        int nextStageIndex = (int)CurrentValue + 1;
+        int completeStageIndex = (int)CurrentVisualValue() - 1;
+        int currentStageIndex = (int)CurrentVisualValue();
+        int nextStageIndex = (int)CurrentVisualValue() + 1;
 
         if (IndexIsNotOutOfRange(nextStageIndex, 1, stagePoints.Length))
         {
@@ -386,6 +386,22 @@ public class SceneStageProgressBar<T> : MonoBehaviour, SceneProgressBar<T> where
         {
             SetStagePointSprite(currentStageIndex, currentStageSprite);
         }
+    }
+    
+    public float CurrentVisualValue()
+    {
+        float CurrentVisualValue;
+
+        if (RevertVisual)
+        {
+            CurrentVisualValue = MaxValue - (CurrentValue-1);
+        }
+        else
+        {
+            CurrentVisualValue = CurrentValue;
+        }
+        
+        return CurrentVisualValue;
     }
 
     private bool IndexIsNotOutOfRange(int index, int min, int max)

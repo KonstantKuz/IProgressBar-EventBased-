@@ -173,6 +173,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 0.56894135, g: 0.9811321, b: 0.51370597, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -545,6 +546,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 0
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -640,6 +642,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -787,6 +790,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: StageBarVertical
+      objectReference: {fileID: 0}
+    - target: {fileID: 582986955459019031, guid: bc501b87f4fb4ee42acb3996472c1ea5,
+        type: 3}
+      propertyPath: revert
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 582986956346990768, guid: bc501b87f4fb4ee42acb3996472c1ea5,
         type: 3}
