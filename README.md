@@ -72,7 +72,7 @@ public class ExampleTree
 }
 ```
 
-There is similar controller to scene where we need to cut a few of trees.
+There is similar controller for scene where we need to cut a few of trees.
 
 ```C#
 public class StageExampleTreeProgressBar : SceneStageProgressBar<StageExampleTreeProgressBar>
