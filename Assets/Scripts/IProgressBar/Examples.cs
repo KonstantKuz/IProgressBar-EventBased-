@@ -63,7 +63,7 @@ public class ExampleTree
         HealthExampleTreeProgressBar.UpdateProgress(healthUpdateData);
     }
 }
-/// There is similar controller
+/// There is similar controller to scene where we need to cut a few of trees
 public class StageExampleTreeProgressBar : SceneStageProgressBar<StageExampleTreeProgressBar>
 {
 }

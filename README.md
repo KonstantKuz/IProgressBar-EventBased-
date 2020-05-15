@@ -1,16 +1,21 @@
-```C#
 
-/// Usage examples
-///
-/// Lets imagine we need a simple progress bar to handle 'health' of the tree we need to cut off
-/// We need to create new empty script that inherits from SceneLineProgressBar
-/// with itself as generic argument 
+
+#**Usage examples**
+
+Lets imagine we need a simple progress bar to handle 'health' of the tree we need to cut off
+We need to create new empty script that inherits from SceneLineProgressBar
+with itself as generic argument 
+```C#
 public class HealthExampleTreeProgressBar : SceneLineProgressBar<HealthExampleTreeProgressBar>
 {
 }
-/// Add this script to your progress bar and fill all properties
-/// All properties have tooltips for best understanding what they representing
-/// Next we create our tree to handle his 'health' using  our new progress bar
+```
+
+Add this script to your progress bar and fill all properties
+All properties have tooltips for best understanding what they representing
+Next we create our tree to handle his 'health' using  our new progress bar
+
+```C#
 public class ExampleTree
 {
     private float maxHealth;
@@ -64,7 +69,11 @@ public class ExampleTree
         HealthExampleTreeProgressBar.UpdateProgress(healthUpdateData);
     }
 }
-/// There is similar controller
+```
+
+There is similar controller to scene where we need to cut a few of trees
+
+```C#
 public class StageExampleTreeProgressBar : SceneStageProgressBar<StageExampleTreeProgressBar>
 {
 }
@@ -118,9 +127,11 @@ public class ExampleTreeController
         //Finish
     }
 }
+```
 
-/// With GameObject progress bar logic is the same as with others
+With GameObject progress bar logic is the same as with others
 
+```C#
 public class ExampleGOLineProgressBar : GOLineProgressBar
 {
 }
