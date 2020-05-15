@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class StageController : MonoBehaviour
 {
-    [SerializeField] private int currentStage = 0;
-    [SerializeField] private int stageToWin = 10;
+    private int currentStage = 0;
+    private int stageToWin = 10;
 
     InitialData<ExampleStageBar> initData;
     UpdateData<ExampleStageBar> updateData;
@@ -46,7 +46,7 @@ public class StageController : MonoBehaviour
     private void RandomInitialize()
     {
         currentStage = 0;
-        stageToWin = Random.Range(3, 10);
+        stageToWin = Random.Range(2, 10);
 
         InitializeStageBar();
     }
