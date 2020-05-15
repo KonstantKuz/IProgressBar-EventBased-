@@ -1,7 +1,7 @@
 ```C#
 
-/// КАК ПОЛЬЗОВАТЬСЯ SceneLineProgressBar/SceneStageProgressBar:
-/// допустим нужен новый прогресс бар в сцене например как прогрессбар здоровья дерева которое нужно срубить
+/// SceneLineProgressBar/SceneStageProgressBar:
+/// в случае нужды прогресс бара в сцене например как прогрессбар здоровья дерева которое нужно срубить
 /// создаем новый скрипт и просто наследуем его от нужного типа прогресс бара
 /// в нашем случае LineProgressBar
 /// 
@@ -10,17 +10,22 @@ public class HealthExampleTreeProgressBar : SceneLineProgressBar<HealthExampleTr
 {
 }
 /// этот скрипт вешаем на прогресс бар и вставляем в поле нужную картинку 
-/// которая исполняет роль прогрессбара (то есть заполняется/убавляется с помощью свойства fillAmount)
+/// которая исполняет роль прогрессбара (то есть будет заполняться/убавляться)
 /// 
 /// в зависимости от необходимости можно установить тип обновления прогресс бара
-/// SmoothType.None - стоит по дефолту, обновление прогресса и фактического и визуального происходит сразу после вызова соответствующего метода/события
+/// SmoothType.None - стоит по дефолту, обновление прогресса и фактического и визуального
+/// происходит сразу после вызова соответствующего метода/события
 /// SmoothType.VisuallyOnly - фактический прогресс будет обновлен моментально
 /// и значит если CurrentValue достигло нужного значения OnProgressFinished будет вызван моментально
 /// НО визуально прогресс будет плавно обновлен в течение времени ~ Duration
-/// SmoothType.ActuallyAndVisually - прогресс будет плавно обновлен в течение времени == Duration и визульно и фактически
+/// SmoothType.ActuallyAndVisually - прогресс будет плавно обновлен в течение времени ~ Duration и визульно и фактически
 /// и значит если CurrentValue в контроллере (тот кто вызывает метод/событие обновления)
 /// достигло нужного значения, OnProgressFinished будет вызван с задержкой ~ Duration
-/// сам прогресс бар готов, инвертировать визуальное направление прогресса можно с помощью RevertVisual
+///
+/// инвертировать направление заполнения прогресса (слева-направо/справа-налево или сверху-вниз/снизу-вверх)
+/// можно с помощью свойства Fill Direction
+/// инвертировать направление визуального прогресса ОТНОСИТЕЛЬНО фактического
+/// можно установив VisualBehaviour == Reverted
 /// далее в нашем случае например в скрипте дерева нам нужно воспроизводить все необходимые манипуляции с этим прогресс баром 
 /// с помощью событий которые он предоставляет
 /// 
@@ -34,14 +39,9 @@ public class ExampleTree
 
     private void OnEnable()
     {
-        SubscribeToNecessaryEvents();
-    }
-
-    private void SubscribeToNecessaryEvents()
-    {
         HealthExampleTreeProgressBar.OnProgressFinished += delegate { FallDown(); } ;
     }
-
+    
     private void FallDown()
     {
         //Fall
@@ -49,13 +49,13 @@ public class ExampleTree
 
     private void Start()
     {
-        currentHealth = maxHealth;
-
         InitializeHealthBar();
     }
 
-    private void InitializeHealthBar()
+    public void InitializeHealthBar()
     {
+        currentHealth = maxHealth;
+
         healthInitData.MinValue = 0;
         healthInitData.MaxValue = maxHealth;
         healthInitData.CurrentValue = maxHealth;
@@ -76,7 +76,6 @@ public class ExampleTree
         healthUpdateData.CurrentValue = currentHealth;
         HealthExampleTreeProgressBar.UpdateProgress(healthUpdateData);
     }
-
 }
 /// И похожий пример контроллера в случае если например нужно срубить несколько деревьев
 public class StageExampleTreeProgressBar : SceneStageProgressBar<StageExampleTreeProgressBar>
@@ -84,21 +83,16 @@ public class StageExampleTreeProgressBar : SceneStageProgressBar<StageExampleTre
 }
 public class ExampleTreeController
 {
-    private int treesCountToWin;
-    private int cuttedTreesCount;
+    private int felledTreesCountToWin;
+    private int felledTreesCount;
 
     InitialData<StageExampleTreeProgressBar> stageInitData;
     UpdateData<StageExampleTreeProgressBar> stageUpdateData;
 
     private void OnEnable()
     {
-        SubscribeToNecessaryEvents();
-    }
-
-    private void SubscribeToNecessaryEvents()
-    {
-        HealthExampleTreeProgressBar.OnProgressFinished += delegate { InstantiateNewTree(); };  // при срубе каждого из деревьев спавнится новое которое в свою очередь
-                                                                                                // инициализирует прогресс бар здоровья дерева по новой
+        HealthExampleTreeProgressBar.OnProgressFinished += delegate { InstantiateNewTree(); }; // при срубе каждого из деревьев спавнится новое которое в свою очередь
+        // инициализирует прогресс бар здоровья дерева по новой
         StageExampleTreeProgressBar.OnProgressFinished += delegate { FinishGame(); };
     }
 
@@ -110,7 +104,7 @@ public class ExampleTreeController
     private void InitializeStageBar()
     {
         stageInitData.MinValue = 0;
-        stageInitData.MaxValue = treesCountToWin;
+        stageInitData.MaxValue = felledTreesCountToWin;
         stageInitData.CurrentValue = 0;
 
         StageExampleTreeProgressBar.InitializeProgress(stageInitData);
@@ -118,14 +112,16 @@ public class ExampleTreeController
 
     private void InstantiateNewTree()
     {
-        cuttedTreesCount++;
-        //Instantiate new tree
+        felledTreesCount++;
+        ExampleTree nextTree = new ExampleTree();
+        nextTree.InitializeHealthBar();
+        
         UpdateStageProgress();
     }
 
     private void UpdateStageProgress()
     {
-        stageUpdateData.CurrentValue = cuttedTreesCount;
+        stageUpdateData.CurrentValue = felledTreesCount;
         StageExampleTreeProgressBar.UpdateProgress(stageUpdateData);
     }
 
@@ -154,7 +150,7 @@ public class ExampleGOWithHealth
 
     private void Death()
     {
-
+        //Death
     }
 
     private void Start()
