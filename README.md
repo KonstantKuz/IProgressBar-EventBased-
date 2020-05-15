@@ -1,34 +1,16 @@
 ```C#
 
-/// SceneLineProgressBar/SceneStageProgressBar:
-/// в случае нужды прогресс бара в сцене например как прогрессбар здоровья дерева которое нужно срубить
-/// создаем новый скрипт и просто наследуем его от нужного типа прогресс бара
-/// в нашем случае LineProgressBar
-/// 
-/// в итоге мы должны получить ПУСТОЙ скрипт
+/// Usage examples
+///
+/// Lets imagine we need a simple progress bar to handle 'health' of the tree we need to cut off
+/// We need to create new empty script that inherits from SceneLineProgressBar
+/// with itself as generic argument 
 public class HealthExampleTreeProgressBar : SceneLineProgressBar<HealthExampleTreeProgressBar>
 {
 }
-/// этот скрипт вешаем на прогресс бар и вставляем в поле нужную картинку 
-/// которая исполняет роль прогрессбара (то есть будет заполняться/убавляться)
-/// 
-/// в зависимости от необходимости можно установить тип обновления прогресс бара
-/// SmoothType.None - стоит по дефолту, обновление прогресса и фактического и визуального
-/// происходит сразу после вызова соответствующего метода/события
-/// SmoothType.VisuallyOnly - фактический прогресс будет обновлен моментально
-/// и значит если CurrentValue достигло нужного значения OnProgressFinished будет вызван моментально
-/// НО визуально прогресс будет плавно обновлен в течение времени ~ Duration
-/// SmoothType.ActuallyAndVisually - прогресс будет плавно обновлен в течение времени ~ Duration и визульно и фактически
-/// и значит если CurrentValue в контроллере (тот кто вызывает метод/событие обновления)
-/// достигло нужного значения, OnProgressFinished будет вызван с задержкой ~ Duration
-///
-/// инвертировать направление заполнения прогресса (слева-направо/справа-налево или сверху-вниз/снизу-вверх)
-/// можно с помощью свойства Fill Direction
-/// инвертировать направление визуального прогресса ОТНОСИТЕЛЬНО фактического
-/// можно установив VisualBehaviour == Reverted
-/// далее в нашем случае например в скрипте дерева нам нужно воспроизводить все необходимые манипуляции с этим прогресс баром 
-/// с помощью событий которые он предоставляет
-/// 
+/// Add this script to your progress bar and fill all properties
+/// All properties have tooltips for best understanding what they representing
+/// Next we create our tree to handle his 'health' using  our new progress bar
 public class ExampleTree
 {
     private float maxHealth;
@@ -56,15 +38,18 @@ public class ExampleTree
     {
         currentHealth = maxHealth;
 
+        // All of this properties also have xml comments
+        // so if you want you can go to realization and study the work of progress bars deeper
+        // to initialize progress you simply need to set up InitialData of HealthExampleTreeProgressBar
+        // and send it using InitializeProgress event
+        
         healthInitData.MinValue = 0;
         healthInitData.MaxValue = maxHealth;
         healthInitData.CurrentValue = maxHealth;
 
         HealthExampleTreeProgressBar.InitializeProgress(healthInitData);
     }
-
-    // ну и естественно нам нужно обновить прогресс бар, что мы и делаем при каждом изменении прогресса
-
+    
     public void ApplyDamage(float amount)
     {
         currentHealth -= amount;
@@ -73,11 +58,13 @@ public class ExampleTree
 
     private void UpdateHealthBar()
     {
+        // On all changes of actual value of some progress 
+        // you need to send this changes to appropriate progress bar
         healthUpdateData.CurrentValue = currentHealth;
         HealthExampleTreeProgressBar.UpdateProgress(healthUpdateData);
     }
 }
-/// И похожий пример контроллера в случае если например нужно срубить несколько деревьев
+/// There is similar controller
 public class StageExampleTreeProgressBar : SceneStageProgressBar<StageExampleTreeProgressBar>
 {
 }
@@ -90,9 +77,10 @@ public class ExampleTreeController
     UpdateData<StageExampleTreeProgressBar> stageUpdateData;
 
     private void OnEnable()
-    {
-        HealthExampleTreeProgressBar.OnProgressFinished += delegate { InstantiateNewTree(); }; // при срубе каждого из деревьев спавнится новое которое в свою очередь
-        // инициализирует прогресс бар здоровья дерева по новой
+    { 
+        // as you can see, when we cut one of our trees, we create a new
+        // which initializes the HealthExampleTreeProgressBar again
+        HealthExampleTreeProgressBar.OnProgressFinished += delegate { InstantiateNewTree(); };
         StageExampleTreeProgressBar.OnProgressFinished += delegate { FinishGame(); };
     }
 
@@ -131,15 +119,14 @@ public class ExampleTreeController
     }
 }
 
-/// с GameObjectLineProgressBar все проще
-/// создаем прогресс бар и вешаем на него такой же пустой скрипт
-/// цепляем этот прогресс бар на объект и в классе объекта создаем ссылку на этот бар
+/// With GameObject progress bar logic is the same as with others
+
 public class ExampleGOLineProgressBar : GOLineProgressBar
 {
 }
 public class ExampleGOWithHealth
 {
-    [SerializeField] private ExampleGOLineProgressBar healthBar;
+    public ExampleGOLineProgressBar healthBar;
     private float currentHP;
     private float maxHP;
 
@@ -169,4 +156,5 @@ public class ExampleGOWithHealth
         healthBar.UpdateCurrentProgress(currentHP);
     }
 }
+
 ```
