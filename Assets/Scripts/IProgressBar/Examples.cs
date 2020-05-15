@@ -37,7 +37,7 @@ public class ExampleTree
     {
         currentHealth = maxHealth;
 
-        // All of this properties also have xml comments
+        // All of this properties also have explanations in IProgressBar.cs
         // so if you want you can go to realization and study the work of progress bars deeper
         // to initialize progress you simply need to set up InitialData of HealthExampleTreeProgressBar
         // and send it using InitializeProgress event

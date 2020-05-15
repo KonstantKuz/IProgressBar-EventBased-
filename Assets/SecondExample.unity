@@ -350,10 +350,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   progressBarImage: {fileID: 954044778}
-  revert: 0
+  visualBehaviour: 0
   fillDirection: 0
   smoothType: 2
-  duration: 5
+  smoothDuration: 1
 --- !u!1 &214537401
 GameObject:
   m_ObjectHideFlags: 0
@@ -522,10 +522,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   progressBarImage: {fileID: 214537404}
-  revert: 0
+  visualBehaviour: 0
   fillDirection: 0
   smoothType: 2
-  duration: 2
+  smoothDuration: 1
 --- !u!1 &324615235
 GameObject:
   m_ObjectHideFlags: 0
@@ -1970,10 +1970,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   progressBarImage: {fileID: 893574052}
-  revert: 0
+  visualBehaviour: 0
   fillDirection: 0
   smoothType: 1
-  duration: 2
+  smoothDuration: 50
 --- !u!1 &1852626039
 GameObject:
   m_ObjectHideFlags: 0

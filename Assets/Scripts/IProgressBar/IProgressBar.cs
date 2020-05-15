@@ -25,7 +25,7 @@ public interface IProgressBar
     VisualBehaviour VisualBehaviour { get; }
     FillDirection FillDirection { get; }
     SmoothType SmoothType { get; }
-    float Duration { get; }
+    float SmoothDuration { get; }
     
     /// <summary>
     /// Set automatically

@@ -15,7 +15,12 @@ public class SceneStageProgressBar<T> : MonoBehaviour, SceneProgressBar<T> where
     private Image[] stagePoints;
     private protected int AnimationHash = 0;
 
+    [Tooltip("Represents visual behaviour of progress.")]
     [SerializeField] private VisualBehaviour visualBehaviour;
+    
+    [Tooltip("Represents place where will be placed MinValue." +
+             "Simple horizontal SceneLineProgressBar with Reverted fill direction and increasing progress" +
+             "will be filled from right corner of ProgressBarImage rect to its left corner.")]
     [SerializeField] private FillDirection fillDirection;
     public float MinValue { get; private set; }
     public float MaxValue { get; private set; }
@@ -23,8 +28,8 @@ public class SceneStageProgressBar<T> : MonoBehaviour, SceneProgressBar<T> where
     public VisualBehaviour VisualBehaviour { get { return visualBehaviour; } }
     public FillDirection FillDirection { get { return fillDirection; } }
     
-    public SmoothType SmoothType { get { throw new Exception("Stage progress bar not implements 'SmoothType' property."); } }
-    public float Duration { get { throw new Exception("Stage progress bar not implements 'Duration' property."); } }
+    public SmoothType SmoothType { get { throw new Exception("Stage progress bars not implements smoothing."); } }
+    public float SmoothDuration { get { throw new Exception("Stage progress bars not implements  smoothing."); } }
     
     public bool Finished { get; private set; }
     public bool Decrease { get; private set; }

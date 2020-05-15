@@ -5,19 +5,26 @@ using System.Collections;
 
 public class GOLineProgressBar : MonoBehaviour, GameObjectProgressBar
 {
+    [Tooltip("Image that will be visualize progress.")]
     [SerializeField] private Image progressBarImage;
 
+    [Tooltip("Represents visual behaviour of progress.")]
     [SerializeField] private VisualBehaviour visualBehaviour;
+    
+    [Tooltip("Represents place where will be placed MinValue." +
+             "Simple horizontal SceneLineProgressBar with Reverted fill direction and increasing progress" +
+             "will be filled from right corner of ProgressBarImage rect to its left corner.")]
     [SerializeField] private FillDirection fillDirection;
+    [Tooltip("Represents how and how long will be smoothed progress in this progress bar.")]
     [SerializeField] private SmoothType smoothType = SmoothType.None;
-    [SerializeField] private float duration = 0;
+    [SerializeField] private float smoothDuration = 0;
     public float MinValue { get; private set; }
     public float MaxValue { get; private set; }
     public float CurrentValue { get; private set; }
     public VisualBehaviour VisualBehaviour { get { return visualBehaviour; } }
     public FillDirection FillDirection { get { return fillDirection; } }
     public SmoothType SmoothType { get { return smoothType ; } }
-    public float Duration { get { return duration; } }
+    public float SmoothDuration { get { return smoothDuration; } }
     public bool Finished { get; private set; }
     public bool Decrease { get; private set; }
     
@@ -120,7 +127,7 @@ public class GOLineProgressBar : MonoBehaviour, GameObjectProgressBar
         {
             timeElapsed = Time.time - startTime;
 
-            CurrentValue = Mathf.MoveTowards(CurrentValue, currentValue, timeElapsed / duration);
+            CurrentValue = Mathf.MoveTowards(CurrentValue, currentValue, timeElapsed / SmoothDuration);
 
             CheckProgress();
 
@@ -139,7 +146,7 @@ public class GOLineProgressBar : MonoBehaviour, GameObjectProgressBar
         {
             timeElapsed = Time.time - startTime;
 
-            progressBarImage.fillAmount = Mathf.MoveTowards(progressBarImage.fillAmount, CurrentVisualProgress(), timeElapsed / duration);
+            progressBarImage.fillAmount = Mathf.MoveTowards(progressBarImage.fillAmount, CurrentVisualProgress(), timeElapsed / SmoothDuration);
 
             yield return waitForFixedFrame;
         }
