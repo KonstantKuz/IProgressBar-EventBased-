@@ -565,23 +565,22 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: 'This stage bars controls like line progress bars
 
-    But they are more
-    specific and little bit hard to set up correctly
 
-    If you want to make stage
-    bar with your own visual just add Horizontal or Vertical Stage bar prefab to
-    your canvas
+    If you want to
+    make stage bar with your own visual just add Horizontal or Vertical Stage bar
+    prefab to your canvas
 
-    Add your new empty stage bar script (in this scene it is "ExampleStageBar")
-    and fill properties like in "ExampleStageBar"
+    Add your new empty stage bar script (in this scene
+    it is "ExampleStageBar") and fill properties like in "ExampleStageBar"
 
-    Remove Example Stage Bar component
+    Remove
+    Example Stage Bar component
 
-    If
-    you need you can change rect width &/or height to get best size of stage points
+    If you need you can change rect width &/or height
+    to get best size of stage points
 
-    If
-    you want you can change animation clip of complete animation in stage point animator'
+    If you want you can change animation clip
+    of complete animation in stage point animator'
 --- !u!222 &1871714099
 CanvasRenderer:
   m_ObjectHideFlags: 0
