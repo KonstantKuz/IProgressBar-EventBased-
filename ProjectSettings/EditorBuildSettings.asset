@@ -6,15 +6,15 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/FirstExample.unity
+    path: Assets/ProgressBars Templates/FirstExample.unity
     guid: 5841f3726aacb714c81ab433fb4fd1f1
   - enabled: 1
-    path: Assets/SecondExample.unity
+    path: Assets/ProgressBars Templates/SecondExample.unity
     guid: 2106efce14088d544adbc9109b551dcc
   - enabled: 1
-    path: Assets/ThirdExample.unity
+    path: Assets/ProgressBars Templates/ThirdExample.unity
     guid: b587122b743df3b47b2cb22620e121e5
   - enabled: 1
-    path: Assets/StageBar.unity
+    path: Assets/ProgressBars Templates/StageBar.unity
     guid: 48fed9b280ecb0d43a45080ab62a6230
   m_configObjects: {}
