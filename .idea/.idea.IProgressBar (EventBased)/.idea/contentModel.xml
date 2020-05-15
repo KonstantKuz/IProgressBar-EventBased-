@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ContentModelStore">
+    <e p="C:\Users\LEGION\.Rider2019.3\system\extResources" t="IncludeRecursive" />
+    <e p="C:\Users\LEGION\.Rider2019.3\system\resharper-host\local\Transient\ReSharperHost\v193\SolutionCaches\_IProgressBar (EventBased).1041207137.00" t="ExcludeRecursive" />
+    <e p="D:\UnityProjects\IProgressBar (EventBased)" t="IncludeRecursive">
+      <e p="Assembly-CSharp.csproj" t="IncludeRecursive" />
+      <e p="Assets" t="Include">
+        <e p="Scripts" t="Include">
+          <e p="IProgressBar" t="Include">
+            <e p="Examples.cs" t="Include" />
+            <e p="GOLineProgressBar.cs" t="Include" />
+            <e p="IGameObjectProgressBar.cs" t="Include" />
+            <e p="IProgressBar.cs" t="Include" />
+            <e p="ISceneProgressBar.cs" t="Include" />
+            <e p="SceneLineProgressBar.cs" t="Include" />
+            <e p="SceneStageProgressBar.cs" t="Include" />
+          </e>
+          <e p="ProgressBarExamples" t="Include">
+            <e p="ExampleController.cs" t="Include" />
+            <e p="ExampleGOController.cs" t="Include" />
+            <e p="ExampleGOProgressBar.cs" t="Include" />
+            <e p="FirstExampleProgressBar.cs" t="Include" />
+            <e p="NextExample.cs" t="Include" />
+            <e p="SecondExampleProgressBar.cs" t="Include" />
+            <e p="SimpleRot.cs" t="Include" />
+          </e>
+          <e p="StageBarExamples" t="Include">
+            <e p="ExampleStageBar.cs" t="Include" />
+            <e p="StageController.cs" t="Include" />
+            <e p="TextControl.cs" t="Include" />
+          </e>
+        </e>
+      </e>
+      <e p="IProgressBar (EventBased).sln" t="IncludeFlat" />
+      <e p="obj" t="ExcludeRecursive" />
+      <e p="Packages" t="ExcludeRecursive" />
+      <e p="Temp\bin" t="ExcludeRecursive" />
+    </e>
+  </component>
+</project>
