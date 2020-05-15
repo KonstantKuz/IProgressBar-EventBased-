@@ -796,6 +796,11 @@ PrefabInstance:
       propertyPath: revert
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 582986955459019031, guid: bc501b87f4fb4ee42acb3996472c1ea5,
+        type: 3}
+      propertyPath: fillDirection
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 582986956346990768, guid: bc501b87f4fb4ee42acb3996472c1ea5,
         type: 3}
       propertyPath: m_ChildControlWidth

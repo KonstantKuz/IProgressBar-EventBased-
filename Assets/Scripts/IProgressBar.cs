@@ -24,6 +24,12 @@ public interface IProgressBar
 
 
     bool RevertVisual { get; }     // инвертирует поведение прогресс бара визуально
+                                   // означает что визуально прогресс будет вести себя противоположно фактическому прогрессу
+                                   // если прогресс фактически увеличивается RevertVisual == true
+                                   // то визуально прогресс будет уменьшаться
+                                   
+    FillDirection FillDirection { get; } // меняет начальное направление движения прогресса
+                                         // слева-направо или справа-налево
 
     bool Decrease { get; }         // необходимо для проверки поведения фактического прогресса
                                    // устанавливается автоматически при инициализации
@@ -51,6 +57,11 @@ public interface IProgressBar
 /// такие прогресс бары должны управляться ИСКЛЮЧИТЕЛЬНО посредством событий таких как
 /// InitializeProgress UpdateProgress 
 /// OnProgressFinished 
+public enum FillDirection
+{
+    Original,
+    Reverted,
+}
 
 public interface SceneProgressBar<T> : IProgressBar where T : class
 {
@@ -92,10 +103,12 @@ public class SceneLineProgressBar<T> : MonoBehaviour, SceneProgressBar<T> where 
     [SerializeField] private Image progressBarImage;
 
     [SerializeField] private bool revert;
+    [SerializeField] private FillDirection fillDirection;
     public float MinValue { get; private set; }
     public float MaxValue { get; private set; }
     public float CurrentValue { get; private set; }
     public bool RevertVisual { get { return revert; } }
+    public FillDirection FillDirection { get { return fillDirection; } }
     public bool Finished { get; private set; }
     public bool Decrease { get; private set; }
     
@@ -106,8 +119,6 @@ public class SceneLineProgressBar<T> : MonoBehaviour, SceneProgressBar<T> where 
     public static Action<OnFinishProgress<T>> OnProgressFinished;         // подписку проще осуществлять с помощью delegate
                                                                           // пр-р : КонкретныйПрогрессБар.OnProgressFinished += delegate { метод/функция с заранее определенными параметрами };
 
-    //public static Action<(SmoothType smoothType, float duration)> SetUpSmoothing;    // необходимо для управления плавностью обновления прогресса
-                                                                                     // пр-р КонкретныйПрогрессБар.SetUpSmoothing( (SmoothType.VisualOnly, 1f) );
     [SerializeField] private SmoothType smoothType = SmoothType.None;
     [SerializeField] private float duration = 0;
     private WaitForFixedUpdate waitForFixedFrame = new WaitForFixedUpdate();
@@ -123,14 +134,7 @@ public class SceneLineProgressBar<T> : MonoBehaviour, SceneProgressBar<T> where 
     {
         InitializeProgress -= Initialize;
         UpdateProgress -= UpdateCurrentProgress;
-        //SetUpSmoothing -= SetSmoothing;
     }
-
-    //private void SetSmoothing((SmoothType smoothType, float duration) smoothSettings)
-    //{
-    //    smoothType = smoothSettings.smoothType;
-    //    duration = smoothSettings.duration;
-    //}
 
     public void Initialize(InitialData<T> initializationData)
     {
@@ -141,15 +145,33 @@ public class SceneLineProgressBar<T> : MonoBehaviour, SceneProgressBar<T> where 
         MaxValue = initializationData.MaxValue;
         CurrentValue = initializationData.CurrentValue;
         if (CurrentProgress() >= 1)
+        {
             Decrease = true;
+        }
+
+        SetUpProgressImage();
 
         Debug.Log($"Initialized {typeof(T)} with Values (click for full details)" +
-            $"\n MinValue = {MinValue}, MaxValue = {MaxValue}, CurrentValue = {CurrentValue}." +
-            $"\n Is this progress decreasing?={Decrease}." +
-            $"\n Is this progress visual reverted?= {RevertVisual}");
-        //логика инициализации и обновления визуала в идеале должны быть единственным изменением в коде шаблона но ничто не идеально))
+                  $"\n MinValue = {MinValue}, MaxValue = {MaxValue}, CurrentValue = {CurrentValue}." +
+                  $"\n Is this progress decreasing?={Decrease}." +
+                  $"\n Is this progress visual reverted?= {RevertVisual}" +
+                  $"\n Fill direction == {FillDirection}");
 
         UpdateUI();
+    }
+
+    private void SetUpProgressImage()
+    {
+        progressBarImage.type = Image.Type.Filled;
+        progressBarImage.fillMethod = Image.FillMethod.Horizontal;
+        if (fillDirection == FillDirection.Original)
+        {
+            progressBarImage.fillOrigin = 0;
+        }
+        else
+        {
+            progressBarImage.fillOrigin = 1;
+        }
     }
 
     public void UpdateUI()
@@ -285,10 +307,12 @@ public class SceneStageProgressBar<T> : MonoBehaviour, SceneProgressBar<T> where
     private protected int AnimationHash = 0;
 
     [SerializeField] private bool revert = false;
+    [SerializeField] private FillDirection fillDirection;
     public float MinValue { get; private set; }
     public float MaxValue { get; private set; }
     public float CurrentValue { get; private set; }
     public bool RevertVisual { get { return revert; } }
+    public FillDirection FillDirection { get { return fillDirection; } }
     public bool Finished { get; private set; }
     public bool Decrease { get; private set; }
     
@@ -350,15 +374,10 @@ public class SceneStageProgressBar<T> : MonoBehaviour, SceneProgressBar<T> where
             stagePoints[i].preserveAspect = true;
         }
 
-        // if (RevertVisual)
-        // {
-        //     System.Array.Reverse(stagePoints);            // магия реверса визула тут происходит совсем по другому
-        //                                                   // однако код реализации интерфейсов по большей части не изменен в обоих шаблонах
-        //                                                   // если вдруг понадобится еще один нетипичный вид прогресс бара
-        //                                                   // и если я окажусь прав, то написать его по шаблону не составит большого труда
-        //                                                   // а даже если и составит то все равно самое главное это то
-        //                                                   // что работать с ним в итоге все равно можно будет так же как и с этими двумя
-        // }
+        if (fillDirection == FillDirection.Reverted)
+        {
+            System.Array.Reverse(stagePoints);
+        }
 
         SetStagePointSprite(0, currentStageSprite);
     }
@@ -486,10 +505,13 @@ public class GOLineProgressBar : MonoBehaviour, GameObjectProgressBar
     [SerializeField] private Image progressBarImage;
 
     [SerializeField] private bool revert;
+    [SerializeField] private FillDirection fillDirection;
+    
     public float MinValue { get; private set; }
     public float MaxValue { get; private set; }
     public float CurrentValue { get; private set; }
     public bool RevertVisual { get { return revert; } }
+    public FillDirection FillDirection { get { return fillDirection; } }
     public bool Finished { get; private set; }
     public bool Decrease { get; private set; }
     
@@ -506,15 +528,33 @@ public class GOLineProgressBar : MonoBehaviour, GameObjectProgressBar
         MaxValue = maxValue;
         CurrentValue = currentValue;
         if (CurrentProgress() >= 1)
+        {
             Decrease = true;
+        }
+        
+        SetUpProgressImage();
 
         Debug.Log($"Initialized {gameObject.name} with Values (click for full details)" +
-            $"\n MinValue = {MinValue}, MaxValue = {MaxValue}, CurrentValue = {CurrentValue}." +
-            $"\n Is this progress decreasing?={Decrease}." +
-            $"\n Is this progress visual reverted?= {RevertVisual}");
-        //логика инициализации и обновления визуала в идеале должны быть единственным изменением в коде шаблона но ничто не идеально))
+                  $"\n MinValue = {MinValue}, MaxValue = {MaxValue}, CurrentValue = {CurrentValue}." +
+                  $"\n Is this progress decreasing?={Decrease}." +
+                  $"\n Is this progress visual reverted?= {RevertVisual}" +
+                  $"\n Fill direction == {FillDirection}");
 
         UpdateUI();
+    }
+    
+    private void SetUpProgressImage()
+    {
+        progressBarImage.type = Image.Type.Filled;
+        progressBarImage.fillMethod = Image.FillMethod.Horizontal;
+        if (fillDirection == FillDirection.Original)
+        {
+            progressBarImage.fillOrigin = 0;
+        }
+        else
+        {
+            progressBarImage.fillOrigin = 1;
+        }
     }
 
     public void UpdateUI()
