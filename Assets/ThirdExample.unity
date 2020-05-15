@@ -456,10 +456,11 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'This progress bar is visually reverted
+  m_Text: 'Visual progress in this progress bar is inverted relative to actual progress
+    (using Visual Behaviour property)
 
-    When actual progress will
-    be decreased - visually it will be increased'
+    When actual progress will be decreased
+    - visually it will be increased'
 --- !u!222 &360246566
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -744,7 +745,8 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Fill direction of this progress bar is simply reverted
+  m_Text: This progress bar uses inverted visual fill direction (using Fill Direction
+    property)
 --- !u!222 &602675370
 CanvasRenderer:
   m_ObjectHideFlags: 0

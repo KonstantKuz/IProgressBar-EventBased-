@@ -196,12 +196,12 @@ PrefabInstance:
     - target: {fileID: 2857495396302774564, guid: f40d1a2a88678414f85c7390f908c344,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 327.99997
+      value: 411
       objectReference: {fileID: 0}
     - target: {fileID: 2857495396302774564, guid: f40d1a2a88678414f85c7390f908c344,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -158.99997
+      value: -149
       objectReference: {fileID: 0}
     - target: {fileID: 2857495396302774564, guid: f40d1a2a88678414f85c7390f908c344,
         type: 3}
@@ -320,22 +320,22 @@ PrefabInstance:
     - target: {fileID: 582986955459019024, guid: bc501b87f4fb4ee42acb3996472c1ea5,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 762
+      value: 757.73
       objectReference: {fileID: 0}
     - target: {fileID: 582986955459019024, guid: bc501b87f4fb4ee42acb3996472c1ea5,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 345.5
+      value: -152
       objectReference: {fileID: 0}
     - target: {fileID: 582986955459019024, guid: bc501b87f4fb4ee42acb3996472c1ea5,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 103.97333
+      value: 146.80643
       objectReference: {fileID: 0}
     - target: {fileID: 582986955459019024, guid: bc501b87f4fb4ee42acb3996472c1ea5,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 395
+      value: 600
       objectReference: {fileID: 0}
     - target: {fileID: 582986955459019024, guid: bc501b87f4fb4ee42acb3996472c1ea5,
         type: 3}
@@ -811,8 +811,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 103.4, y: -151.99998}
-  m_SizeDelta: {x: -206.9, y: -680}
+  m_AnchoredPosition: {x: -0.024169922, y: -204.30005}
+  m_SizeDelta: {x: -293.6611, y: -613.3916}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1871714098
 MonoBehaviour:
@@ -853,17 +853,19 @@ MonoBehaviour:
     make stage bar with your own visual just add Horizontal or Vertical Stage bar
     prefab to your canvas
 
-    Add your new empty stage bar script (in this scene
-    it is "ExampleStageBar") and fill properties like in "ExampleStageBar"
+    Add your stage bar script (in this scene it is "ExampleStageBar")
+    and fill properties like in "ExampleStageBar"
 
-    Remove
-    Example Stage Bar component
+    Remove Example Stage Bar component
 
-    If you need you can change rect width &/or height
-    to get best size of stage points
+    If
+    you need you can change rect width &/or height to get best size of stage points
 
-    If you want you can change animation clip
-    of complete animation in stage point animator'
+    If
+    you want you can change animation clip of complete animation in stage point animator
+
+    To
+    animate stage bar you need to set AnimationHash in Awake of your stage bar script'
 --- !u!222 &1871714099
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1021,7 +1023,7 @@ PrefabInstance:
     - target: {fileID: 582986955459019024, guid: bc501b87f4fb4ee42acb3996472c1ea5,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 104.95
+      value: 73.4
       objectReference: {fileID: 0}
     - target: {fileID: 582986955459019024, guid: bc501b87f4fb4ee42acb3996472c1ea5,
         type: 3}
@@ -1031,7 +1033,7 @@ PrefabInstance:
     - target: {fileID: 582986955459019024, guid: bc501b87f4fb4ee42acb3996472c1ea5,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 150
+      value: 146.81348
       objectReference: {fileID: 0}
     - target: {fileID: 582986955459019024, guid: bc501b87f4fb4ee42acb3996472c1ea5,
         type: 3}
@@ -1165,12 +1167,12 @@ PrefabInstance:
     - target: {fileID: 2857495396302774564, guid: f40d1a2a88678414f85c7390f908c344,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 328
+      value: 411.00003
       objectReference: {fileID: 0}
     - target: {fileID: 2857495396302774564, guid: f40d1a2a88678414f85c7390f908c344,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -52
+      value: -42
       objectReference: {fileID: 0}
     - target: {fileID: 2857495396302774564, guid: f40d1a2a88678414f85c7390f908c344,
         type: 3}
