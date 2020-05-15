@@ -406,7 +406,7 @@ GameObject:
   - component: {fileID: 719419770}
   - component: {fileID: 719419769}
   m_Layer: 5
-  m_Name: Text (2)
+  m_Name: Tip
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -788,7 +788,7 @@ GameObject:
   - component: {fileID: 1871714099}
   - component: {fileID: 1871714098}
   m_Layer: 5
-  m_Name: Text
+  m_Name: Explanation
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -886,7 +886,7 @@ GameObject:
   - component: {fileID: 2143574202}
   - component: {fileID: 2143574201}
   m_Layer: 5
-  m_Name: Text (1)
+  m_Name: Play
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
