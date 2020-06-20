@@ -93,6 +93,7 @@ public class SceneStageProgressBar<T> : MonoBehaviour, SceneProgressBar<T> where
         {
             stagePoints[i] = Instantiate(stagePointImagePrefab, stagePointsParentPanel.transform).GetComponent<Image>();
             stagePoints[i].preserveAspect = true;
+            SetStagePointSprite(i, nextStageSprite);
         }
 
         if (fillDirection == FillDirection.Reverted)
