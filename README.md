@@ -7,7 +7,7 @@
 <p>with itself as generic argument.
 
 ```C#
-public class HealthExampleTreeProgressBar : SceneLineProgressBar<HealthExampleTreeProgressBar>
+public class HealthExampleProgressBar : SceneLineProgressBar<HealthExampleProgressBar>
 {
 }
 ```
@@ -22,12 +22,12 @@ public class ExampleTree
     private float maxHealth;
     private float currentHealth;
 
-    InitialData<HealthExampleTreeProgressBar> healthInitData;
-    UpdateData<HealthExampleTreeProgressBar> healthUpdateData;
+    InitialData<HealthExampleProgressBar> healthInitData;
+    UpdateData<HealthExampleProgressBar> healthUpdateData;
 
     private void OnEnable()
     {
-        HealthExampleTreeProgressBar.OnProgressFinished += delegate { FallDown(); } ;
+        HealthExampleProgressBar.OnProgressFinished += delegate { FallDown(); } ;
     }
     
     private void FallDown()
@@ -46,14 +46,14 @@ public class ExampleTree
 
         // All of this properties also have explanations in IProgressBar.cs
         // so if you want you can go to realization and study the work of progress bars deeper
-        // to initialize progress you simply need to set up InitialData of HealthExampleTreeProgressBar
+        // to initialize progress you simply need to set up InitialData of HealthExampleProgressBar
         // and send it using InitializeProgress event
         
         healthInitData.MinValue = 0;
         healthInitData.MaxValue = maxHealth;
         healthInitData.CurrentValue = maxHealth;
 
-        HealthExampleTreeProgressBar.InitializeProgress(healthInitData);
+        HealthExampleProgressBar.InitializeProgress(healthInitData);
     }
     
     public void ApplyDamage(float amount)
@@ -67,7 +67,7 @@ public class ExampleTree
         // On all changes of actual value of some progress 
         // you need to send this changes to appropriate progress bar
         healthUpdateData.CurrentValue = currentHealth;
-        HealthExampleTreeProgressBar.UpdateProgress(healthUpdateData);
+        HealthExampleProgressBar.UpdateProgress(healthUpdateData);
     }
 }
 ```
@@ -75,7 +75,7 @@ public class ExampleTree
 There is similar controller for scene where we need to cut a few of trees.
 
 ```C#
-public class StageExampleTreeProgressBar : SceneStageProgressBar<StageExampleTreeProgressBar>
+public class StageExampleProgressBar : SceneStageProgressBar<StageExampleProgressBar>
 {
 }
 public class ExampleTreeController
@@ -83,15 +83,15 @@ public class ExampleTreeController
     private int felledTreesCountToWin;
     private int felledTreesCount;
 
-    InitialData<StageExampleTreeProgressBar> stageInitData;
-    UpdateData<StageExampleTreeProgressBar> stageUpdateData;
+    InitialData<StageExampleProgressBar> stageInitData;
+    UpdateData<StageExampleProgressBar> stageUpdateData;
 
     private void OnEnable()
     { 
         // as you can see, when we cut one of our trees, we create a new
-        // which initializes the HealthExampleTreeProgressBar again
-        HealthExampleTreeProgressBar.OnProgressFinished += delegate { InstantiateNewTree(); };
-        StageExampleTreeProgressBar.OnProgressFinished += delegate { FinishGame(); };
+        // which initializes the HealthExampleProgressBar again
+        HealthExampleProgressBar.OnProgressFinished += delegate { InstantiateNewTree(); };
+        StageExampleProgressBar.OnProgressFinished += delegate { FinishGame(); };
     }
 
     private void Start()
@@ -105,7 +105,7 @@ public class ExampleTreeController
         stageInitData.MaxValue = felledTreesCountToWin;
         stageInitData.CurrentValue = 0;
 
-        StageExampleTreeProgressBar.InitializeProgress(stageInitData);
+        StageExampleProgressBar.InitializeProgress(stageInitData);
     }
 
     private void InstantiateNewTree()
@@ -120,7 +120,7 @@ public class ExampleTreeController
     private void UpdateStageProgress()
     {
         stageUpdateData.CurrentValue = felledTreesCount;
-        StageExampleTreeProgressBar.UpdateProgress(stageUpdateData);
+        StageExampleProgressBar.UpdateProgress(stageUpdateData);
     }
 
     private void FinishGame()
