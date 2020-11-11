@@ -39,13 +39,13 @@ public class SceneLineProgressBar<T> : MonoBehaviour, SceneProgressBar<T> where 
                                                                           
     private WaitForFixedUpdate waitForFixedFrame = new WaitForFixedUpdate();
 
-    private void OnEnable()
+    public virtual void OnEnable()
     {
         InitializeProgress += Initialize;
         UpdateProgress += UpdateCurrentProgress;
     }
 
-    private void OnDisable()
+    public virtual void OnDisable()
     {
         InitializeProgress -= Initialize;
         UpdateProgress -= UpdateCurrentProgress;

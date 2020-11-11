@@ -41,14 +41,14 @@ public class SceneStageProgressBar<T> : MonoBehaviour, SceneProgressBar<T> where
     public static Action<OnFinishProgress<T>> OnProgressFinished;           // Subscription is done using delegate
                                                                             // ex : SomeProgressBar.OnProgressFinished += delegate { DoSomething(); };
                                                                             // ex : SomeProgressBar.OnProgressFinished += delegate { DoSomething("SomeParam"); };
-                                                                            
-    private void OnEnable()
+
+    public virtual void OnEnable()
     {
         InitializeProgress += Initialize;
         UpdateProgress += UpdateCurrentProgress;
     }
 
-    private void OnDisable()
+    public virtual void OnDisable()
     {
         InitializeProgress -= Initialize;
         UpdateProgress -= UpdateCurrentProgress;
